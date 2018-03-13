@@ -1,0 +1,33 @@
+{
+  "name": "methor",
+  "version": "1.0.0",
+  "description": "a router style restserver - method",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ancm-s/methor.git"
+  },
+  "keywords": [
+    "method",
+    "restserver",
+    "restserver",
+    "fb",
+    "methor",
+    "nodejs",
+    "npm"
+  ],
+  "author": "anCMS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ancm-s/methor/issues"
+  },
+  "homepage": "https://github.com/ancm-s/methor#readme",
+  "dependencies": {
+    "finalhandler": "^1.1.1",
+    "lodash": "^4.17.5",
+    "router": "^1.3.2"
+  }
+}
