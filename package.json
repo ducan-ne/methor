@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "a router style restserver - method",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "router"
   ],
   "author": "anCMS",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ancm-s/methor/issues"
   },
