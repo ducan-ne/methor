@@ -13,7 +13,7 @@ function Init() {
 	const router = opts.router || Router()
 
 	if (!(server instanceof Server))
-		throw new TypeError('option server must be instance of http.Server')
+		throw new TypeError('option server must be abstract of http.Server')
 
 	this.server = server
 	this.router = router

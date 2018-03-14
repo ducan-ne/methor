@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a router style restserver - method",
   "main": "index.js",
   "scripts": {
@@ -17,14 +17,15 @@
     "fb",
     "methor",
     "nodejs",
-    "npm"
+    "npm",
+    "router"
   ],
   "author": "anCMS",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ancm-s/methor/issues"
   },
-  "homepage": "https://github.com/ancm-s/methor#readme",
+  "homepage": "https://github.com/ancm-s/methor",
   "dependencies": {
     "finalhandler": "^1.1.1",
     "lodash": "^4.17.5",
