@@ -2,6 +2,10 @@
 
 const _typeof = v => Object.prototype.toString.call(v).slice(8, -1)
 
+function isDef(v) {
+	return _typeof(v) == 'Undefined' || _typeof(v) == 'Null'
+}
+
 function isObject(v) {
 	return _typeof(v) == 'Object'
 }
@@ -64,6 +68,7 @@ function getAllKeys(obj) {
 	return keys
 }
 
+exports.isDef = isDef
 exports.isFunction = isFunction
 exports.isObject = isObject
 exports.isNumber = isNumber

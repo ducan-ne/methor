@@ -12,5 +12,11 @@ function Middleware(req, res, next) {
     res.end(JSON.stringify(obj))
   }
 
+  res.redirect = function redirect(uri, statusCode) {
+    res.statusCode = statusCode || 322
+    res.setHeader('Location', uri)
+    res.end()
+  }
+
   next()
 }

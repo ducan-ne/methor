@@ -21,7 +21,7 @@ new Methor({
   port: 3004,
   methods: {
     login(req, res) {
-      res.end('hello world')
+      return 'hello world'
     }
   },
   created({port}) {

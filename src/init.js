@@ -1,10 +1,19 @@
 'use strict'
 
 const { Server, METHODS } = require('http')
-const { isArray, identity, isObject, bind, isFunction } = require('./util')
+const {
+	isArray,
+	identity,
+	isObject,
+	bind,
+	isFunction,
+	isDef,
+	isString
+} = require('./util')
 const Router = require('router')
 const finalhandler = require('finalhandler')
 const methods = require('methods')
+const bodyParser = require('body-parser')
 
 module.exports = Init
 
@@ -12,6 +21,11 @@ function Init() {
 	const opts = this.opts
 	const router = opts.router || Router()
 	const server = opts.server || new Server()
+	const parseBodyJson = bodyParser.json()
+	const parseBodyFormData = bodyParser.urlencoded({ extended: false })
+
+	if (!(server instanceof Server))
+		throw new TypeError('options.server must be abstract of http.Server')
 
 	this.router = router
 	this.server = server
@@ -33,18 +47,46 @@ function Init() {
 				}
 				return server[name]
 			}
-			return;
+			return
 		}
 	})
 
-
 	router.use(this.middleware)
+
+	// --- BODY PARSE ---
+	router.use((req, res, next) => {
+		if (isDef(req.body)) {
+			parseBodyJson(req, res, next)
+		} else {
+			next()
+		}
+	})
+	router.use((req, res, next) => {
+		if (isDef(req.body)) {
+			parseBodyFormData(req, res, next)
+		} else {
+			next()
+		}
+	})
+	// --- END BODY PARSE ---
 
 	if (isArray(opts.middlewares)) {
 		for (let mid of opts.middlewares) {
 			router.use(mid)
 		}
 	}
+
+	if (isString(opts.static)) {
+		try {
+			const serveStatic = require('serve-static')
+			router.use(serveStatic(opts.static))
+		} catch (err) {
+			throw new TypeError(
+				'you must install "serve-static" to your dependencies'
+			)
+		}
+	}
+
 	if (isObject(opts.routes)) {
 		let routes = opts.routes
 		for (let path in routes) {
@@ -62,7 +104,7 @@ function Init() {
 				...callbacks.map(cb => {
 					return (...args) => {
 						let result = bind(cb, opts.funcs, args)(...args)
-            this.afterEnter(...args, result)
+						this.afterEnter(...args, result)
 					}
 				})
 			)
@@ -87,7 +129,7 @@ function Init() {
 			}
 
 			let result = bind(method, opts.funcs, args)(...args)
-      this.afterEnter(...args, result)
+			this.afterEnter(...args, result)
 		}
 	)
 

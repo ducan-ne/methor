@@ -1,6 +1,7 @@
 'use strict'
 
 const Methor = require('../')
+const path = require('path')
 
 const user = {
   login: require('./methods/login'),
@@ -9,6 +10,7 @@ const user = {
 
 const methor = new Methor({
   // _restserverPath: '/ancms',
+  // static: path.resolve(__dirname, '.', 'public'),
   port: 3004,
   methods: {
     user
