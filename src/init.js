@@ -1,22 +1,42 @@
 'use strict'
 
-const { createServer, Server } = require('http')
-const { isArray, identity, isObject, bind } = require('./util')
+const { Server, METHODS } = require('http')
+const { isArray, identity, isObject, bind, isFunction } = require('./util')
 const Router = require('router')
 const finalhandler = require('finalhandler')
+const methods = require('methods')
 
 module.exports = Init
 
 function Init() {
 	const opts = this.opts
-	const server = opts.server || createServer()
 	const router = opts.router || Router()
+	const server = opts.server || new Server()
 
-	if (!(server instanceof Server))
-		throw new TypeError('option server must be abstract of http.Server')
-
-	this.server = server
 	this.router = router
+	this.server = server
+
+	for (let k of methods.concat('all')) {
+		if (isFunction(this.router[k])) {
+			this[k] = this.router[k].bind(router)
+		}
+	}
+	this.proxy = new Proxy(this, {
+		get(target, name, _) {
+			if (name in target) return target[name]
+			if (name in server) {
+				if (isFunction(server[name])) {
+					return function(...args) {
+						server[name](...args)
+						return target
+					}
+				}
+				return server[name]
+			}
+			return;
+		}
+	})
+
 
 	router.use(this.middleware)
 
@@ -75,12 +95,13 @@ function Init() {
 		.listen(opts.port, () => {
 			let info = {
 				port: opts.port,
-				server,
-				router
+				router,
+				server
 			}
 			opts.created && opts.created.bind(info)(info)
 		})
 		.on('request', (req, res) => {
 			router(req, res, finalhandler(req, res))
 		})
+	return this
 }

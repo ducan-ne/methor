@@ -12,7 +12,6 @@ const {
 	getAllKeys
 } = require('./util')
 const Router = require('router')
-const { EventEmitter } = require('events')
 
 function Methor(opts) {
 	if (!(this instanceof Methor)) return new Methor(opts)
@@ -29,8 +28,6 @@ function Methor(opts) {
 	if (!opts.port) throw new TypeError('option port is required')
 	if (!isNumber(opts.port)) throw new TypeError('option port must be number')
 
-	const bus = (this.bus = new EventEmitter())
-
 	this.opts = opts
 	this.methods = getAllKeys(methods).reduce((obj, methodName) => {
 		obj[methodName] = getProperty(methods, methodName)
@@ -43,21 +40,26 @@ function Methor(opts) {
 		this.funcs = opts.funcs
 	}
 
+
 	this.$on = function(name, cb) {
-		bus.on(name, cb)
+		return this.on(name, cb)
 	}
 	this.$emit = function(name, ...data) {
-		bus.emit(name, ...data)
+		return this.emit(name, ...data)
 	}
 
 	this._beforeEnter = []
 
-	// console.log(this.methods)
-	return this
+	// Server.call(this)
+
+	this.init()
+
+
+	return this.proxy
 }
 
-Methor.prototype = Object.create(Router.prototype)
-Methor.prototype.constructor = Methor
+// Methor.prototype = Object.create(Server.prototype)
+Methor.prototype.constructor = Server
 
 Methor.prototype.init = require('./init')
 Methor.prototype.middleware = require('./middleware')
@@ -73,13 +75,11 @@ Methor.prototype.beforeEnter = function(...callbacks) {
 }
 Methor.prototype.afterEnter = async function(req, res, _, result) {
   if (isPromise(result)) result = await result
-  this.$emit('end', result)
   if (result == undefined || result == null) return
   if (isString(result) || isNumber(result))
     return res.end(String(result))
   if (isObject(result))
     return res.json(result)
-    
   res.end(result)
 }
 

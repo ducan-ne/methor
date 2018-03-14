@@ -33,7 +33,7 @@ new Methor({
 
 ### Methor(options)
 
-return abstract of ```Router```
+return Abstract of `http.Server`
 
 Options
 

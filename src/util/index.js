@@ -46,7 +46,22 @@ function bind(fn, ctx, [req, res, next]) {
 }
 
 function isPromise(v) {
-  return v && isFunction(v)
+  return v && isFunction(v.then)
+}
+
+function getAllKeys(obj) {
+	const keys = []
+	for (let [key, value] of Object.entries(obj)) {
+		// if (isChildrenObject ) {
+    keys.push(key)
+		if (isObject(value) && !isArray(value) && !isFunction(value)) {
+			let subkeys = getAllKeys(value)
+			for (let subkey of subkeys) {
+				keys.push(key + '.' + subkey)
+			}
+		}
+	}
+	return keys
 }
 
 exports.isFunction = isFunction
@@ -79,17 +94,4 @@ exports.getProperty = function getProperty(
 }
 
 
-exports.getAllKeys = function getAllKeys(obj) {
-	const keys = []
-	for (let [key, value] of Object.entries(obj)) {
-		// if (isChildrenObject ) {
-    keys.push(key)
-		if (isObject(value) && !isArray(value) && !isFunction(value)) {
-			let subkeys = getDeepKeys(value)
-			for (let subkey of subkeys) {
-				keys.push(key + '.' + subkey)
-			}
-		}
-	}
-	return keys
-}
+exports.getAllKeys = getAllKeys
