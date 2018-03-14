@@ -44,9 +44,9 @@ Options
 [npm-url]: https://npmjs.org/package/methor
 [node-version-image]: https://img.shields.io/node/v/methor.svg
 [node-version-url]: http://nodejs.org/download/
-[travis-image]: https://img.shields.io/travis/pillarjs/methor/master.svg
-[travis-url]: https://travis-ci.org/pillarjs/methor
-[coveralls-image]: https://img.shields.io/coveralls/pillarjs/methor/master.svg
-[coveralls-url]: https://coveralls.io/r/pillarjs/methor?branch=master
+[travis-image]: https://img.shields.io/travis/ancm-s/methor/master.svg
+[travis-url]: https://travis-ci.org/ancm-s/methor
+[coveralls-image]: https://img.shields.io/coveralls/ancm-s/methor/master.svg
+[coveralls-url]: https://coveralls.io/r/ancm-s/methor?branch=master
 [downloads-image]: https://img.shields.io/npm/dm/methor.svg
 [downloads-url]: https://npmjs.org/package/methor
