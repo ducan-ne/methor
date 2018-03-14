@@ -38,3 +38,15 @@ new Methor({
 return abstract of ```Router```
 
 Options
+
+
+[npm-image]: https://img.shields.io/npm/v/methor.svg
+[npm-url]: https://npmjs.org/package/methor
+[node-version-image]: https://img.shields.io/node/v/methor.svg
+[node-version-url]: http://nodejs.org/download/
+[travis-image]: https://img.shields.io/travis/pillarjs/methor/master.svg
+[travis-url]: https://travis-ci.org/pillarjs/methor
+[coveralls-image]: https://img.shields.io/coveralls/pillarjs/methor/master.svg
+[coveralls-url]: https://coveralls.io/r/pillarjs/methor?branch=master
+[downloads-image]: https://img.shields.io/npm/dm/methor.svg
+[downloads-url]: https://npmjs.org/package/methor
