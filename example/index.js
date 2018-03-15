@@ -17,13 +17,20 @@ const methor = new Methor({
   },
   funcs: {
   },
-  routes: {
-    '/': function() {
+  routes: [{
+    path: '/test',
+    router(req, res) {
       return {
         ahihi: true
       }
-    }
-  },
+    },
+    children: [{
+      path: '/test1',
+      router() {
+        return 'xin chao'
+      }
+    }]
+  }],
   created({port, router}) {
     console.log('app started at port %d', port)
     router.get('/logout', (req, res) => {

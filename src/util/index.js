@@ -68,6 +68,10 @@ function getAllKeys(obj) {
 	return keys
 }
 
+function cleanPath(path) {
+	return path.replace(/\/\//g, '/')
+}
+
 exports.isDef = isDef
 exports.isFunction = isFunction
 exports.isObject = isObject
@@ -76,6 +80,7 @@ exports.isArray = isArray
 exports.isString = isString
 exports.isPromise = isPromise
 exports.bind = bind
+exports.cleanPath = cleanPath
 exports.identity = _ => _
 
 // https://stackoverflow.com/questions/8556673/get-javascript-object-property-via-key-name-in-variable
