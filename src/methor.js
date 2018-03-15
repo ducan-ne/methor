@@ -63,6 +63,7 @@ Methor.prototype.constructor = Server
 
 Methor.prototype.init = require('./init')
 Methor.prototype.middleware = require('./middleware')
+Methor.prototype.addRoute = require('./add-route')
 
 Methor.prototype.beforeEnter = function(...callbacks) {
 	if (callbacks.length == 0) throw new TypeError('argument handler is required')

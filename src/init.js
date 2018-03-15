@@ -8,6 +8,8 @@ const {
 	bind,
 	isFunction,
 	isDef,
+	isNumber,
+	cleanPath,
 	isString
 } = require('./util')
 const Router = require('router')
@@ -87,27 +89,14 @@ function Init() {
 		}
 	}
 
-	if (isObject(opts.routes)) {
+	if (isObject(opts.routes) || isArray(opts.routes)) {
 		let routes = opts.routes
-		for (let path in routes) {
-			let callbacks = isObject(routes[path]) ? routes[path] : [routes[path]]
-			if (callbacks.length == 0)
-				throw new TypeError('argument handler is required')
-
-			// callbacks.map(cb => {
-			//   cb = cb.bind(opts.funcs)
-			// 	return cb
-			// })
-
-			router.get(
-				path,
-				...callbacks.map(cb => {
-					return (...args) => {
-						let result = bind(cb, opts.funcs, args)(...args)
-						this.afterEnter(...args, result)
-					}
-				})
-			)
+		for (let index in routes) {
+			if (isNumber(index)) {
+				this.addRoute(routes[index])
+			} else {
+				this.addRoute(routes[index], index)
+			}
 		}
 	}
 
