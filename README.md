@@ -28,7 +28,6 @@ new Methor({
     console.log('app started at port %d', port)
   }
 })
-  .init()
 ```
 
 ### Methor(options)
