@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "/restserver?method=user.login&class=",
   "main": "lib/methor.js",
   "repository": {
@@ -38,7 +38,7 @@
     "build": "babel src -d lib",
     "serve": "node lib/index.js"
   },
-  "eginies": {
+  "engines": {
     "node": ">4.0.0"
   },
   "devDependencies": {
