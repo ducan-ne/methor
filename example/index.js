@@ -1,6 +1,6 @@
 'use strict'
 
-const Methor = require('../')
+const Methor = require('../src/methor')
 const path = require('path')
 
 const user = {
@@ -15,7 +15,15 @@ const methor = new Methor({
   methods: {
     user
   },
+  services: {
+    User: {
+      login(username, pwd) {
+        return // check
+      }
+    }
+  },
   funcs: {
+    this_is_a_func(){}
   },
   routes: [{
     path: '/test',
@@ -28,6 +36,7 @@ const methor = new Methor({
       path: '/test1',
       method: 'POST',
       router() {
+        this.this_is_a_func()
         return 'xin chao'
       }
     }]

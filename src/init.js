@@ -1,7 +1,7 @@
 'use strict'
 
-const { Server, METHODS } = require('http')
-const {
+import { Server, METHODS } from 'http'
+import {
 	isArray,
 	identity,
 	isObject,
@@ -11,15 +11,12 @@ const {
 	isNumber,
 	cleanPath,
 	isString
-} = require('./util')
-const Router = require('router')
-const finalhandler = require('finalhandler')
-const methods = require('methods')
-const bodyParser = require('body-parser')
+} from './util'
+import Router from 'router'
+import methods from 'methods'
+import bodyParser from 'body-parser'
 
-module.exports = Init
-
-function Init() {
+export default function Init() {
 	const opts = this.opts
 	const router = opts.router || Router()
 	const server = opts.server || new Server()
@@ -31,6 +28,10 @@ function Init() {
 
 	this.router = router
 	this.server = server
+
+	if (isObject(opts.services)) {
+		this.services = opts.services
+	}
 
 	for (let k of methods.concat('all')) {
 		if (isFunction(this.router[k])) {
@@ -104,35 +105,12 @@ function Init() {
 		identity
 	)
 
+	const restserverPath = this.opts._restserverPath
+
 	router.all(
-		this.opts._restserverPath || '/restserver',
+		isString(restserverPath) ? restserverPath : '/restserver',
 		...beforeEnter,
-		(...args) => {
-			const [req, res, next] = args
-			const methodName = req.query.method
-			const method = this.methods[methodName]
-
-			if (!method) {
-				this.warn(`method ${methodName} not exist`)
-				return next()
-			}
-
-			let result = bind(method, opts.funcs, args)(...args)
-			this.afterEnter(...args, result)
-		}
+		this.restserver.bind(this)
 	)
 
-	server
-		.listen(opts.port, () => {
-			let info = {
-				port: opts.port,
-				router,
-				server
-			}
-			opts.created && opts.created.bind(info)(info)
-		})
-		.on('request', (req, res) => {
-			router(req, res, finalhandler(req, res))
-		})
-	return this
 }

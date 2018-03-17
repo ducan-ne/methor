@@ -1,63 +1,67 @@
 'use strict'
 
-const _typeof = v => Object.prototype.toString.call(v).slice(8, -1)
+import get from 'lodash.get'
 
-function isDef(v) {
+function _typeof(v) {
+	return Object.prototype.toString.call(v).slice(8, -1)
+}
+
+export function isDef(v) {
 	return _typeof(v) == 'Undefined' || _typeof(v) == 'Null'
 }
 
-function isObject(v) {
+export function isObject(v) {
 	return _typeof(v) == 'Object'
 }
 
-function isFunction(v) {
+export function isFunction(v) {
 	return _typeof(v) == 'Function'
 }
 
-function isNumber(v) {
+export function isNumber(v) {
 	return _typeof(v) == 'Number'
 }
 
-function isArray(v) {
-  return _typeof(v) == 'Array'
+export function isArray(v) {
+	return _typeof(v) == 'Array'
 }
 
-function isString(v) {
-  return _typeof(v) == 'String'
+export function isString(v) {
+	return _typeof(v) == 'String'
 }
 
-function bind(fn, ctx, [req, res, next]) {
-  let proxy = new Proxy({next, ...ctx}, {
-    get(target, name) {
-      // res.end('312321')
-      if (req[name]) {
-        let _req = req[name]
-        if (isFunction(_res))
-          return _req.bind(req)
-        return _req
-      }
-      if (res[name]) {
-        let _res = res[name]
-        if (isFunction(_res))
-          return _res.bind(res)
-        return _res
-      }
-      return target[name]
-
-    }
-  })
-  return fn.bind(proxy)
+export function bind(fn, ctx, [req, res, next]) {
+	let proxy = new Proxy(
+		ctx,
+		{
+			get(target, name) {
+				// res.end('312321')
+				if (req[name]) {
+					let _req = req[name]
+					if (isFunction(_res)) return _req.bind(req)
+					return _req
+				}
+				if (res[name]) {
+					let _res = res[name]
+					if (isFunction(_res)) return _res.bind(res)
+					return _res
+				}
+				return target[name]
+			}
+		}
+	)
+	return fn.bind(proxy)
 }
 
-function isPromise(v) {
-  return v && isFunction(v.then)
+export function isPromise(v) {
+	return v && isFunction(v.then)
 }
 
-function getAllKeys(obj) {
+export function getAllKeys(obj) {
 	const keys = []
 	for (let [key, value] of Object.entries(obj)) {
 		// if (isChildrenObject ) {
-    keys.push(key)
+		keys.push(key)
 		if (isObject(value) && !isArray(value) && !isFunction(value)) {
 			let subkeys = getAllKeys(value)
 			for (let subkey of subkeys) {
@@ -68,26 +72,15 @@ function getAllKeys(obj) {
 	return keys
 }
 
-function cleanPath(path) {
+export function cleanPath(path) {
 	return path.replace(/\/\//g, '/')
 }
 
-exports.isDef = isDef
-exports.isFunction = isFunction
-exports.isObject = isObject
-exports.isNumber = isNumber
-exports.isArray = isArray
-exports.isString = isString
-exports.isPromise = isPromise
-exports.bind = bind
-exports.cleanPath = cleanPath
-exports.identity = _ => _
+export const identity = _ => _
 
 // https://stackoverflow.com/questions/8556673/get-javascript-object-property-via-key-name-in-variable
-exports.getProperty = function getProperty(
-	targetObj,
-	keyPath
-) {
+export function getProperty(targetObj, keyPath) {
+	return get(targetObj, keyPath)
 	var keys = keyPath.split('.')
 	if (keys.length == 0) return undefined
 	keys = keys.reverse()
@@ -103,5 +96,22 @@ exports.getProperty = function getProperty(
 	return subObject
 }
 
+// get-parameter-names
+export const getParamFunc = (function() {
+	const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg
+	const DEFAULT_PARAMS = /=[^,]+/mg
+	const FAT_ARROWS = /=>.*$/mg
+	return function(fn) {
+		var code = fn
+			.toString()
+			.replace(COMMENTS, '')
+			.replace(FAT_ARROWS, '')
+			.replace(DEFAULT_PARAMS, '')
 
-exports.getAllKeys = getAllKeys
+		var result = code
+			.slice(code.indexOf('(') + 1, code.indexOf(')'))
+			.match(/([^\s,]+)/g)
+
+		return result === null ? [] : result
+	}
+})()

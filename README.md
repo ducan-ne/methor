@@ -15,19 +15,62 @@ $ npm install methor --save
 
 # USAGE
 ```js
-const Methor = require('methor')
+'use strict'
 
-new Methor({
+const Methor = require('methor')
+const path = require('path')
+
+const user = {
+  login: require('./methods/login'),
+  logout: require('./methods/logout'),
+}
+
+const methor = new Methor({
   port: 3004,
   methods: {
-    login(req, res) {
-      return 'hello world'
+    user
+  },
+  services: {
+    User: {
+      login(username, pwd) {
+        return // check
+      }
     }
   },
-  created({port}) {
+  funcs: {
+    this_is_a_func(){}
+  },
+  routes: [{
+    path: '/test',
+    router(req, res) {
+      return {
+        ahihi: true
+      }
+    },
+    children: [{
+      path: '/test1',
+      method: 'POST',
+      router() {
+        this.this_is_a_func()
+        return 'xin chao'
+      }
+    }]
+  }],
+  created({port, router}) {
     console.log('app started at port %d', port)
+    router.get('/logout', (req, res) => {
+      res.end('ahihi do ngok')
+    })
   }
 })
+  .$on('request', (req, res) => {
+    console.log('request coming')
+  })
+  .get('/', (req, res) => {
+    res.end(':D')
+  })
+// curl http://localhost:3004/restserver?method=user.login
+
 ```
 
 ### Methor(options)

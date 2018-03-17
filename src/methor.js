@@ -1,7 +1,9 @@
 'use strict'
 
-const { createServer, Server } = require('http')
-const {
+import 'babel-polyfill'
+
+import { createServer, Server }  from 'http'
+import {
 	isFunction,
 	isObject,
 	isArray,
@@ -10,8 +12,14 @@ const {
   isString,
 	getProperty,
 	getAllKeys
-} = require('./util')
-const Router = require('router')
+} from './util'
+import Router from 'router'
+
+import Init from './init'
+import Listen from './listen'
+import addRoute from './add-route'
+import Middleware from './middleware'
+import Restserver from './restserver'
 
 function Methor(opts) {
 	if (!(this instanceof Methor)) return new Methor(opts)
@@ -49,10 +57,12 @@ function Methor(opts) {
 	}
 
 	this._beforeEnter = []
+	this.services = {}
 
 	// Server.call(this)
 
 	this.init()
+	this.listen()
 
 
 	return this.proxy
@@ -61,9 +71,11 @@ function Methor(opts) {
 // Methor.prototype = Object.create(Server.prototype)
 Methor.prototype.constructor = Server
 
-Methor.prototype.init = require('./init')
-Methor.prototype.middleware = require('./middleware')
-Methor.prototype.addRoute = require('./add-route')
+Methor.prototype.init = Init
+Methor.prototype.listen = Listen
+Methor.prototype.middleware = Middleware
+Methor.prototype.addRoute = addRoute
+Methor.prototype.restserver = Restserver
 
 Methor.prototype.beforeEnter = function(...callbacks) {
 	if (callbacks.length == 0) throw new TypeError('argument handler is required')
@@ -76,7 +88,8 @@ Methor.prototype.beforeEnter = function(...callbacks) {
 }
 Methor.prototype.afterEnter = async function(req, res, _, result) {
   if (isPromise(result)) result = await result
-  if (result == undefined || result == null) return
+	if (res.finished) return false
+  if (result == undefined || result == null) return res.end('')
   if (isString(result) || isNumber(result))
     return res.end(String(result))
   if (isObject(result))

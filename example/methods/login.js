@@ -1,10 +1,10 @@
 'use strict'
 
-module.exports = (req, res) => {
+module.exports = ['req[headers][cookie]', 'res', (req, res, headers) => {
   return new Promise(resolve => {
     // --- FAKE LOGIN ---
     setTimeout(() => {
       resolve('user login')
     }, 1e3)
   })
-}
+}]

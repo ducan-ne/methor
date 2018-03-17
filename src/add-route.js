@@ -1,17 +1,15 @@
 'use strict'
 
-const {
+import {
 	isString,
 	isFunction,
 	isObject,
 	isArray,
 	cleanPath,
 	bind
-} = require('./util')
+} from './util'
 
-module.exports = addRoute
-
-function addRoute(router, path) {
+export default function addRoute(router, path) {
 	const _isFunction = isFunction(router)
 	if (_isFunction && isString(path)) {
 		router.path = path
@@ -22,19 +20,28 @@ function addRoute(router, path) {
 			: isArray(router.router) ? router.router : [router.router]
 		if (callbacks.length == 0)
 			throw new TypeError('argument handler is required')
-		this.router[(router.method || 'get').toLowerCase()](
-			router.path,
-			...callbacks.map(cb => {
-				return (...args) => {
-					let result = bind(cb, this.opts.funcs, args)(...args)
-					this.afterEnter(...args, result)
-				}
-			})
-		)
+		let methods = ( router.method || 'get' ).split(',').map(method => {
+			return method.toLowerCase() // convert all method to lower case
+		})
+
+		// allow all methods
+		for (let method of methods) {
+			if (!this.router[method]) // check method can use
+				throw new Error('No support method '+method+' !!!')
+			this.router[method](
+				router.path,
+				...callbacks.map(cb => {
+					return (...args) => {
+						let result = bind(cb, this.opts.funcs, args)(...args)
+						this.afterEnter(...args, result)
+					}
+				})
+			)
+		}
 	}
-	if (isArray(router.children)) {
-		for (let child of router.children) {
-      child.path = cleanPath(`${router.path}/${child.path}`)
+	if (isArray(router.children)) { // if router has children
+		for (let child of router.children) { // read all child and set router
+      child.path = cleanPath(`${router.path}/${child.path}`) // replace // => /
 			this.addRoute(child, path, child.path)
 		}
 	}

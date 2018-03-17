@@ -1,10 +1,8 @@
 'use strict'
 
-const {parse} = require('url')
+import {parse} from 'url'
 
-module.exports = Middleware
-
-function Middleware(req, res, next) {
+export default function Middleware(req, res, next) {
   req.query = parse(req.url, true).query
 
   res.json = function json(obj) {
