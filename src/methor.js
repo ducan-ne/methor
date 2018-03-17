@@ -1,6 +1,6 @@
 'use strict'
 
-import 'babel-polyfill'
+import regeneratorRuntime from "regenerator-runtime"
 
 import { createServer, Server }  from 'http'
 import {
