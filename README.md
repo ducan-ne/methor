@@ -20,8 +20,6 @@ $ npm install methor --save
 const Methor = require('methor')
 const path = require('path')
 const app = new Methor({
-	// _restserverPath: '/ancms',
-	// static: path.resolve(__dirname, '.', 'public'),
 	port: 3004,
 	methods: {
 		user
