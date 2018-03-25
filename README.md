@@ -1,4 +1,4 @@
-# methor
+# Methor
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -15,7 +15,7 @@ a router style restserver - method
 $ npm install methor --save
 ```
 
-# USAGE
+## USAGE
 ```js
 const Methor = require('methor')
 const path = require('path')
@@ -71,6 +71,10 @@ Require package: `serve-static`
 ##### created
 
 Type: `Function`
+
+#### routes
+
+Type: `Array`
 
 
 
