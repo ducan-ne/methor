@@ -46,7 +46,7 @@ export default function(opts) {
 			}
 
       if (!method.validate) return next()
-      
+
 
 			let params, isPayload
 
@@ -77,7 +77,7 @@ export default function(opts) {
 				let param = get(params, validate.name)
 				if (isUndef(param)) return handlerError('MISSING_PARAM', validate)
 
-				if (isUndef(transform)) {
+				if (isFunction(transform)) {
 					set(params, validate.name, transform(param))
 				}
 

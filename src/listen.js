@@ -3,17 +3,22 @@
 import finalhandler from 'finalhandler'
 
 export default function Listen() {
-	const {opts, router, server} = this
-	server
-		.listen(process.env.PORT || opts.port || 80, () => {
+	const { opts, router, server } = this
+	const args = [
+		opts.port || process.env.PORT,
+		() => {
 			let info = {
-				port: opts.port,
+				port: opts.port || server.address().port,
 				router,
-				server,
+				server
 			}
 			opts.created && opts.created.bind(info)(info)
-		})
-		.on('request', (req, res) => {
-			router(req, res, finalhandler(req, res))
-		})
+		}
+	]
+	if (!args[0]) {
+		args.shift()
+	}
+	server.listen(...args).on('request', (req, res) => {
+		router(req, res, finalhandler(req, res))
+	})
 }

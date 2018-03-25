@@ -40,7 +40,7 @@ export function isString(v) {
 
 export function bind(fn, ctx, [req, res, next]) {
 	let proxy = new Proxy(
-		ctx,
+		ctx || {},
 		{
 			get(target, name) {
 				// res.end('312321')

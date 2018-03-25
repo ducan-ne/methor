@@ -38,8 +38,8 @@ function Methor(opts) {
 	if (!(isFunction(methods) || isObject(methods)))
 		throw new TypeError('option methods must be a function or object ')
 
-	if (!opts.port) throw new TypeError('option port is required')
-	if (!isNumber(opts.port)) throw new TypeError('option port must be number')
+	// if (!opts.port) throw new TypeError('option port is required')
+	// if (!isNumber(opts.port)) throw new TypeError('option port must be number')
 
 	this.opts = opts
 	this.methods = getAllKeys(methods).reduce((obj, methodName) => {

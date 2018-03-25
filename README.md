@@ -44,7 +44,7 @@ Options
 ###### port
 
 Type: `Number`
-Default `80`
+Default `process.env.PORT`
 
 ###### methods
 
