@@ -44,7 +44,7 @@ export default function(...args) {
 				// if ok
 				let matches = param.match(regex),
             name
-        if (matches && matches[1]) {
+        if (matches && matches[1]) { // if matched, name will be equal last item of matches
           name = matches[matches.length]
         }
 				if (name) {
@@ -53,7 +53,6 @@ export default function(...args) {
 				return inject.push(obj)
 			}
 		}
-		if (param in this.services) return inject.push(this.services[param])
 		inject.push(undefined)
 	}
 
@@ -75,5 +74,5 @@ export default function(...args) {
   }
 
 	let result = bind(method, this.opts.funcs, args)(...inject)
-	this.afterEnter(...args, result)
+	this.handlerResponse(...args, result)
 }

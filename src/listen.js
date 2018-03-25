@@ -5,7 +5,7 @@ import finalhandler from 'finalhandler'
 export default function Listen() {
 	const {opts, router, server} = this
 	server
-		.listen(opts.port, () => {
+		.listen(process.env.PORT || opts.port || 80, () => {
 			let info = {
 				port: opts.port,
 				router,

@@ -33,7 +33,7 @@ export default function addRoute(router, path) {
 				...callbacks.map(cb => {
 					return (...args) => {
 						let result = bind(cb, this.opts.funcs, args)(...args)
-						this.afterEnter(...args, result)
+						this.handlerResponse(...args, result)
 					}
 				})
 			)

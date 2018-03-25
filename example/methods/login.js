@@ -8,3 +8,8 @@ module.exports = ['req[headers][cookie]', 'res', (req, res, headers) => {
     }, 1e3)
   })
 }]
+
+module.exports.validate = [{
+  type: String,
+  name: 'username'
+}]

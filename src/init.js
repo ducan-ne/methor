@@ -7,7 +7,7 @@ import {
 	isObject,
 	bind,
 	isFunction,
-	isDef,
+	isUndef,
 	isNumber,
 	cleanPath,
 	isString
@@ -29,6 +29,24 @@ export default function Init() {
 	this.router = router
 	this.server = server
 
+	let self = this
+
+	this.proxy = new Proxy(this, {
+		get(target, name, _) {
+			if (name in target) return target[name]
+			if (self.server && name in self.server) {
+				if (isFunction(self.server[name])) {
+					return function(...args) {
+						self.server[name](...args)
+						return target
+					}
+				}
+				return self.server[name]
+			}
+			return
+		}
+	})
+
 	if (isObject(opts.services)) {
 		this.services = opts.services
 	}
@@ -38,34 +56,19 @@ export default function Init() {
 			this[k] = this.router[k].bind(router)
 		}
 	}
-	this.proxy = new Proxy(this, {
-		get(target, name, _) {
-			if (name in target) return target[name]
-			if (name in server) {
-				if (isFunction(server[name])) {
-					return function(...args) {
-						server[name](...args)
-						return target
-					}
-				}
-				return server[name]
-			}
-			return
-		}
-	})
 
 	router.use(this.middleware)
 
 	// --- BODY PARSE ---
 	router.use((req, res, next) => {
-		if (isDef(req.body)) {
+		if (isUndef(req.body)) {
 			parseBodyJson(req, res, next)
 		} else {
 			next()
 		}
 	})
 	router.use((req, res, next) => {
-		if (isDef(req.body)) {
+		if (isUndef(req.body)) {
 			parseBodyFormData(req, res, next)
 		} else {
 			next()
@@ -101,9 +104,9 @@ export default function Init() {
 		}
 	}
 
-	const beforeEnter = [this.opts.beforeEnter, ...this._beforeEnter].filter(
+	const beforeEnter = [...this._beforeEnter, this.opts.beforeEnter].filter(
 		identity
-	)
+	) // remove if opt.beforeEnter is undefined, bind method
 
 	const restserverPath = this.opts._restserverPath
 
@@ -112,5 +115,7 @@ export default function Init() {
 		...beforeEnter,
 		this.restserver.bind(this)
 	)
+
+	return this.proxy
 
 }

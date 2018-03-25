@@ -6,8 +6,16 @@ function _typeof(v) {
 	return Object.prototype.toString.call(v).slice(8, -1)
 }
 
-export function isDef(v) {
+export function isUndef(v) {
 	return _typeof(v) == 'Undefined' || _typeof(v) == 'Null'
+}
+
+export function isRegexp(v) {
+	return _typeof(v) == 'RegExp'
+}
+
+export function isDef(v) {
+	return _typeof(v) != 'Undefined' || _typeof(v) != 'Null'
 }
 
 export function isObject(v) {
@@ -115,3 +123,7 @@ export const getParamFunc = (function() {
 		return result === null ? [] : result
 	}
 })()
+
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
