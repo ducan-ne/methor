@@ -45,7 +45,7 @@ export default function(...args) {
 				let matches = param.match(regex),
             name
         if (matches && matches[1]) { // if matched, name will be equal last item of matches
-          name = matches[matches.length]
+          name = matches[matches.length-1]
         }
 				if (name) {
 					return inject.push(getProperty(obj, name))

@@ -4,7 +4,7 @@ import assert from 'assert'
 import Methor from '../lib/methor'
 import got from 'got'
 
-describe('TEST API', function() {
+describe('TEST Options', function() {
 	it('methor.created', done => {
 		new Methor({
 			methods: {},
