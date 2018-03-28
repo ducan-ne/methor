@@ -51,7 +51,7 @@ export default function Init() {
 		this.services = opts.services
 	}
 
-	for (let k of methods.concat('all')) {
+	for (let k of methods.concat('all', 'use')) {
 		if (isFunction(this.router[k])) {
 			this[k] = this.router[k].bind(router)
 		}

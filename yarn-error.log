@@ -1,0 +1,85 @@
+Arguments: 
+  /usr/local/Cellar/node/9.2.1/bin/node /usr/local/bin/yarn publish
+
+PATH: 
+  /Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  9.2.1
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "methor",
+    "version": "1.2.12",
+    "description": "/restserver?method=user.login&class=",
+    "main": "lib/methor.js",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/ancm-s/methor.git"
+    },
+    "keywords": [
+      "method",
+      "restserver",
+      "restserver",
+      "fb",
+      "methor",
+      "nodejs",
+      "npm",
+      "router"
+    ],
+    "author": "anCMS",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/ancm-s/methor/issues"
+    },
+    "homepage": "https://github.com/ancm-s/methor",
+    "dependencies": {
+      "body-parser": "^1.18.2",
+      "chalk": "^2.3.2",
+      "finalhandler": "^1.1.1",
+      "lodash.get": "^4.4.2",
+      "lodash.set": "^4.3.2",
+      "methods": "^1.1.2",
+      "regenerator-runtime": "^0.11.1",
+      "router": "^1.3.2"
+    },
+    "scripts": {
+      "test": "mocha --require babel-register",
+      "babel-node": "babel-node --presets=env",
+      "start": "nodemon --exec \"babel-node ./example/index.js\"",
+      "build": "babel src -d lib",
+      "serve": "node lib/index.js"
+    },
+    "devDependencies": {
+      "babel-cli": "^6.26.0",
+      "babel-preset-env": "^1.6.1",
+      "chai": "^4.1.2",
+      "got": "^8.3.0",
+      "mocha": "^5.0.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:128791:13)
+      at Interface.emit (events.js:159:13)
+      at Interface._ttyWrite (readline.js:786:16)
+      at ReadStream.onkeypress (readline.js:165:10)
+      at ReadStream.emit (events.js:159:13)
+      at emitKeys (internal/readline.js:420:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1022:36)
+      at ReadStream.emit (events.js:159:13)
+      at addChunk (_stream_readable.js:265:12)

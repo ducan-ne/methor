@@ -28,7 +28,8 @@ export default function(...args) {
 	const regexs = {
 		req: [generateRegEx('(req|request)'), req],
 		res: [generateRegEx('(res|resp|request)'), res],
-		headers: [generateRegEx('headers'), req.headers]
+		headers: [generateRegEx('headers'), req.headers],
+		next: [generateRegEx('next'), next]
 	}
 
 	for (let key in this.services) {
