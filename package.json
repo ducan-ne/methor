@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.2.11",
+  "version": "1.2.13",
   "description": "/restserver?method=user.login&class=",
   "main": "lib/methor.js",
   "repository": {
