@@ -7,6 +7,7 @@ import got from 'got'
 describe('TEST Options', function() {
 	it('methor.created', done => {
 		new Methor({
+			port: null,
 			methods: {},
 			created() {
 				done()
@@ -15,6 +16,7 @@ describe('TEST Options', function() {
 	})
 	it('methor.routes', done => {
 		new Methor({
+			port: null,
 			methods: {},
 			routes: [
 				{
@@ -47,7 +49,7 @@ describe('TEST Options', function() {
 							json: true
 						}).then(res => {
 							assert.equal(res.body.ahihi, true)
-              done()
+							done()
 						})
 					})
 					.catch(done)

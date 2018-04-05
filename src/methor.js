@@ -13,14 +13,17 @@ import {
 	isString,
 	getProperty,
 	getAllKeys,
-	capitalize
+	capitalize,
+	isNull
 } from './util'
 import * as util from './util'
 import Router from 'router'
 
-import Init from './init'
-import Listen from './listen'
-import addRoute from './add-route'
+import Init from './internal/init'
+import Listen from './internal/listen'
+import Mount from './internal/mount'
+import addRoute from './internal/add-route'
+
 import Middleware from './middleware'
 import Restserver from './restserver'
 
@@ -53,6 +56,11 @@ function Methor(opts) {
 		this.funcs = opts.funcs
 	}
 
+	// --- private property ---
+	this.restserver = Restserver
+	this.addRoute = addRoute
+	this.$mount = Mount
+
 	this.$on = function(name, cb) {
 		return this.proxy.on(name, cb)
 	}
@@ -69,7 +77,14 @@ function Methor(opts) {
 	this.installPlugin()
 
 	this.init()
-	this.listen()
+	if (isNumber(opts.port)) {
+		this.listen()
+	}
+
+	if (isNull(opts.port)) {
+		this.server = new Server()
+		this.listen()
+	}
 
 	return this
 }
@@ -80,8 +95,6 @@ Methor.prototype.constructor = Server
 Methor.prototype.init = Init
 Methor.prototype.listen = Listen
 Methor.prototype.middleware = Middleware
-Methor.prototype.addRoute = addRoute
-Methor.prototype.restserver = Restserver
 
 Methor.prototype.beforeEnter = function(...callbacks) {
 	if (callbacks.length == 0) throw new TypeError('argument handler is required')
@@ -136,7 +149,7 @@ Methor.prototype.installPlugin = function() {
 }
 
 for (let key in util) {
-	Methor.prototype[key] = util[key]
+	Methor.prototype[key] = Methor[key] = util[key]
 }
 
 ;['validator'].map(name => {

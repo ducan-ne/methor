@@ -1,11 +1,12 @@
-
 function test(req, res) {
-  res.end('ok')
+	res.end('ok')
 }
 
-test.validate = [{
-  type: Number,
-  name: 'num'
-}]
+test.validate = [
+	{
+		type: Number,
+		name: 'num'
+	}
+]
 
 module.exports = test

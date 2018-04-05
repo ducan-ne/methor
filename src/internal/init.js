@@ -11,7 +11,7 @@ import {
 	isNumber,
 	cleanPath,
 	isString
-} from './util'
+} from '../util'
 import Router from 'router'
 import methods from 'methods'
 import bodyParser from 'body-parser'
@@ -19,12 +19,10 @@ import bodyParser from 'body-parser'
 export default function Init() {
 	const opts = this.opts
 	const router = opts.router || Router()
-	const server = opts.server || new Server()
+	const server = opts.server || isNumber(opts.port) ? new Server() : {}
 	const parseBodyJson = bodyParser.json()
 	const parseBodyFormData = bodyParser.urlencoded({ extended: false })
 
-	if (!(server instanceof Server))
-		throw new TypeError('options.server must be abstract of http.Server')
 
 	this.router = router
 	this.server = server

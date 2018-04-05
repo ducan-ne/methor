@@ -25,6 +25,8 @@ export default function(opts) {
 		const { isRegexp, isFunction, isUndef, isArray, warn } = this
 		this.beforeEnter((req, res, next) => {
 			const methodName = req.query.method
+
+
 			const method = this.methods[methodName]
 
 			const handlerError = (code, validate) => {
@@ -39,6 +41,10 @@ export default function(opts) {
 				opts.handler(
 					new ValidateError(method, methodName, code, req, res, validate)
 				)
+			}
+
+			if (!methodName) {
+				return handlerError('MISSING_METHODNAME')
 			}
 
 			if (!method) {

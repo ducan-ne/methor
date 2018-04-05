@@ -1,20 +1,22 @@
 'use strict'
 
-import {parse} from 'url'
+import { parse } from 'url'
 
 export default function Middleware(req, res, next) {
-  req.query = parse(req.url, true).query
+	const query = (req.query = parse(req.url, true).query)
 
-  res.json = function json(obj) {
-    res.setHeader('Content-Type', 'application/json;charset=utf8')
-    res.end(JSON.stringify(obj))
-  }
+	res.json = function json(obj, pretty) {
+		res.setHeader('Content-Type', 'application/json;charset=utf8')
+		res.end(pretty == true ? JSON.stringify(obj, null, 4) : JSON.stringify(obj))
+	}
 
-  res.redirect = function redirect(uri, statusCode) {
-    res.statusCode = statusCode || 322
-    res.setHeader('Location', uri)
-    res.end()
-  }
+	res.redirect = function redirect(uri, statusCode) {
+		res.statusCode = statusCode || 322
+		res.setHeader('Location', uri)
+		res.end()
+	}
 
-  next()
+	req.class = query.method ? query.method.split('.')[0] : false
+
+	next()
 }

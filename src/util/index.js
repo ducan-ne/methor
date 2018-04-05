@@ -1,9 +1,15 @@
 'use strict'
 
 import get from 'lodash.get'
+import fs from 'fs'
+import path from 'path'
 
-function _typeof(v) {
+export function _typeof(v) {
 	return Object.prototype.toString.call(v).slice(8, -1)
+}
+
+export function isNull(v) {
+	return _typeof(v) == 'Null'
 }
 
 export function isUndef(v) {
@@ -23,7 +29,7 @@ export function isObject(v) {
 }
 
 export function isFunction(v) {
-	return _typeof(v) == 'Function'
+	return ['GeneratorFunction', 'AsyncFunction', 'Function'].includes(_typeof(v))
 }
 
 export function isNumber(v) {
@@ -39,25 +45,22 @@ export function isString(v) {
 }
 
 export function bind(fn, ctx, [req, res, next]) {
-	let proxy = new Proxy(
-		ctx || {},
-		{
-			get(target, name) {
-				// res.end('312321')
-				if (req[name]) {
-					let _req = req[name]
-					if (isFunction(_res)) return _req.bind(req)
-					return _req
-				}
-				if (res[name]) {
-					let _res = res[name]
-					if (isFunction(_res)) return _res.bind(res)
-					return _res
-				}
-				return target[name]
+	let proxy = new Proxy(ctx || {}, {
+		get(target, name) {
+			// res.end('312321')
+			if (req[name]) {
+				let _req = req[name]
+				if (isFunction(_res)) return _req.bind(req)
+				return _req
 			}
+			if (res[name]) {
+				let _res = res[name]
+				if (isFunction(_res)) return _res.bind(res)
+				return _res
+			}
+			return target[name]
 		}
-	)
+	})
 	return fn.bind(proxy)
 }
 
@@ -106,9 +109,9 @@ export function getProperty(targetObj, keyPath) {
 
 // get-parameter-names
 export const getParamFunc = (function() {
-	const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg
-	const DEFAULT_PARAMS = /=[^,]+/mg
-	const FAT_ARROWS = /=>.*$/mg
+	const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm
+	const DEFAULT_PARAMS = /=[^,]+/gm
+	const FAT_ARROWS = /=>.*$/gm
 	return function(fn) {
 		var code = fn
 			.toString()
@@ -125,5 +128,13 @@ export const getParamFunc = (function() {
 })()
 
 export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+	return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+export function requireall(dir) {
+	return fs.readdirSync(dir).reduce((obj, file) => {
+		let fileName = file.split('.')[0]
+		obj[fileName] = require(path.resolve(dir, file))
+		return obj
+	}, {})
 }

@@ -1,6 +1,6 @@
 'use strict'
 
-const Methor = require('../lib/methor')
+const Methor = require('../src/methor')
 const path = require('path')
 
 const user = {
@@ -8,10 +8,13 @@ const user = {
 	logout: require('./methods/logout')
 }
 
+// import {Server} from 'http'
+
+
 const app = new Methor({
 	// _restserverPath: '/ancms',
 	// static: path.resolve(__dirname, '.', 'public'),
-	port: 3004,
+	port: null,
 	methods: {
 		user
 	},
@@ -73,6 +76,11 @@ const app = new Methor({
 				if (err.code == 'INVALID_PARAM') {
 					res.json({
 						message: `param ${err.validate.name} is invalid`
+					})
+				}
+				if (err.code == 'MISSING_METHODNAME') {
+					res.json({
+						message: 'param method is required'
 					})
 				}
 			}

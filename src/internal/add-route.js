@@ -7,7 +7,7 @@ import {
 	isArray,
 	cleanPath,
 	bind
-} from './util'
+} from '../util'
 
 export default function addRoute(router, path) {
 	const _isFunction = isFunction(router)
@@ -27,7 +27,7 @@ export default function addRoute(router, path) {
 		// allow all methods
 		for (let method of methods) {
 			if (!this.router[method]) // check method can use
-				throw new Error('No support method '+method+' !!!')
+				throw new Error('Not support method '+method+' !!!')
 			this.router[method](
 				router.path,
 				...callbacks.map(cb => {
