@@ -17,7 +17,7 @@ type Route = {
 }
 
 export default function addRoute(router: Route, path: string): void {
-  const _isFunction = isFunction(router)
+  const _isFunction: boolean = isFunction(router)
   if (_isFunction && isString(path)) {
     router.path = path
   }
