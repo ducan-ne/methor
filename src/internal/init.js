@@ -19,10 +19,8 @@ import Middleware from '../middleware'
 
 export default function Init() {
   const opts = this.$options
-  const parseBodyJson = bodyParser.json(opts.parseBodyJson)
-  const parseBodyFormData = bodyParser.urlencoded(
-    isObject(opts.parseBody) ? opts.parseBody : { extended: false }
-  )
+  const parseBodyJson = bodyParser.json()
+  const parseBodyFormData = bodyParser.urlencoded({ extended: false })
 
   if (isObject(opts.services)) {
     this.services = opts.services
