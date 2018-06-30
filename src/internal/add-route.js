@@ -13,7 +13,7 @@ type Route = {
   method: string,
   path: string,
   handler: Function,
-  children: Route
+  children: [Route]
 }
 
 export default function addRoute(router: Route, path: string): void {
