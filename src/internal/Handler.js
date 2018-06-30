@@ -3,8 +3,8 @@
 import finalhandler from 'finalhandler'
 import { defer, isBoolean } from '../util'
 import parseurl from 'parseurl'
-import Route from './Route'
-import Layer from './Layer'
+import Route from './route'
+import Layer from './layer'
 
 function getProtohost(url) {
   if (typeof url !== 'string' || url.length === 0 || url[0] === '/') {
