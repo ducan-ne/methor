@@ -1,5 +1,5 @@
 'use strict'
 
-module.exports = (req, res) => {
+module.exports = function(req, res) {
   return 'user logout'
 }

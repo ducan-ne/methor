@@ -2,7 +2,7 @@
 
 import regeneratorRuntime from 'regenerator-runtime'
 
-import { createServer, Server } from 'http'
+import { Server } from 'http'
 import chalk from 'chalk'
 import {
   isFunction,
@@ -12,28 +12,42 @@ import {
   isPromise,
   isString,
   getProperty,
-  getAllKeys,
+  getAllMethod,
   capitalize,
-  isNull
+  setPropertyOf,
+  isNull,
+  flatten
 } from './util'
 import * as util from './util'
 import Router from 'router'
+import methods from 'methods'
 
-import Init from './internal/init'
-import Listen from './internal/listen'
-import Mount from './internal/mount'
-import addRoute from './internal/add-route'
+import Route from './internal/Route'
+import Layer from './internal/Layer'
 
-import Middleware from './middleware'
+import Init from './internal/Init'
+import Listen from './internal/Listen'
+import Mount from './internal/Mount'
+import addRoute from './internal/AddRoute'
+import Handler from './internal/Handler'
+import LodashSet from 'lodash.set'
+
 import Restserver from './restserver'
 
 import { resolve } from 'path'
+import { EventEmitter } from 'events'
 
 function Methor(opts) {
-  if (!(this instanceof Methor)) return new Methor(opts)
+  if (!(this instanceof Methor)) {
+    return new Methor(opts)
+  }
 
-  if (!opts) throw new TypeError('1 argument required, but only 0 present.')
-  if (!isObject(opts)) throw new TypeError('argument options must be object')
+  if (!opts) {
+    throw new TypeError('1 argument required, but only 0 present.')
+  }
+  if (!isObject(opts)) {
+    throw new TypeError('argument options must be object')
+  }
 
   const methods = opts.methods
 
@@ -44,11 +58,8 @@ function Methor(opts) {
   // if (!opts.port) throw new TypeError('option port is required')
   // if (!isNumber(opts.port)) throw new TypeError('option port must be number')
 
-  this.opts = opts
-  this.methods = getAllKeys(methods).reduce((obj, methodName) => {
-    obj[methodName] = getProperty(methods, methodName)
-    return obj
-  }, {})
+  this.$options = opts
+  this.methods = getAllMethod(methods)
 
   if (opts.funcs) {
     if (!isObject(opts.funcs))
@@ -61,13 +72,6 @@ function Methor(opts) {
   this.addRoute = addRoute
   this.$mount = Mount
 
-  this.$on = function(name, cb) {
-    return this.proxy.on(name, cb)
-  }
-  this.$emit = function(name, ...data) {
-    return this.proxy.emit(name, ...data)
-  }
-
   this._beforeEnter = []
   this._installed = []
   this.services = {}
@@ -76,28 +80,39 @@ function Methor(opts) {
 
   this.installPlugin()
 
-  this.init()
-  if (isNumber(opts.port)) {
-    this.listen()
+  function methor(req, res, next) {
+    methor.handler(req, res, next)
   }
+  setPropertyOf(methor, this)
 
-  if (isNull(opts.port)) {
-    this.server = new Server()
-    this.listen()
-  }
+  const event = new EventEmitter()
+  methor.$on = event.on
+  methor.$off = event.removeListener
+  methor.$emit = event.emit
+  methor.$removeAllListeners = event.removeAllListeners
 
-  return this
+  methor.stack = []
+  methor.params = {}
+
+  methor.init()
+
+  return methor
 }
+
+Methor.prototype = function() {}
 
 // Methor.prototype = Object.create(Server.prototype)
 Methor.prototype.constructor = Server
 
+Methor.prototype.handler = Handler
 Methor.prototype.init = Init
 Methor.prototype.listen = Listen
-Methor.prototype.middleware = Middleware
+Methor.prototype.BetterHandler = require('./internal/BetterHandler').default
 
-Methor.prototype.beforeEnter = function(...callbacks) {
-  if (callbacks.length == 0) throw new TypeError('argument handler is required')
+Methor.prototype.beforeEnter = function beforeEnter(...callbacks) {
+  if (callbacks.length == 0) {
+    throw new TypeError('argument handler is required')
+  }
   for (let callback of callbacks) {
     if (!isFunction(callback))
       throw new TypeError('argument handler must be function')
@@ -106,16 +121,34 @@ Methor.prototype.beforeEnter = function(...callbacks) {
   return this
 }
 
-Methor.prototype.handlerResponse = async function(req, res, _, result) {
-  if (isPromise(result)) result = await result
-  if (res.finished) return false
-  if (result == undefined || result == null) return res.end('')
-  if (isString(result) || isNumber(result)) return res.end(String(result))
-  if (isObject(result) || isArray(result)) return res.json(result)
+Methor.prototype.handlerResponse = async function handlerResponse(
+  req,
+  res,
+  result
+) {
+  if (isPromise(result)) {
+    result = await result
+  }
+
+  if (res.finished) {
+    return false
+  }
+
+  if (result == undefined || result == null) {
+    return res.end('')
+  }
+
+  if (isString(result) || isNumber(result)) {
+    return res.end(String(result))
+  }
+
+  if (isObject(result) || isArray(result)) {
+    return res.json(result)
+  }
   res.end(result.toString())
 }
 
-Methor.prototype.warn = function(msg, plugin) {
+Methor.prototype.warn = function warn(msg, plugin) {
   if (process.env.NODE_ENV != 'development') {
     console.warn(
       chalk.yellow('[') +
@@ -130,8 +163,77 @@ Methor.prototype.warn = function(msg, plugin) {
   }
 }
 
+Methor.prototype.$route = function $route(path) {
+  const opts = this.$options
+  const route = new Route(path)
+
+  const layer = new Layer(
+    path,
+    {
+      sensitive: opts.caseSensitive,
+      strict: opts.strict,
+      end: true
+    },
+    handle
+  )
+
+  function handle(req, res, next) {
+    route.dispatch(req, res, next)
+  }
+
+  layer.route = route
+  this.stack.push(layer)
+  return route
+}
+
+Methor.prototype.middleware = function use(handler) {
+  let offset = 0
+  let path = '/'
+
+  if (!isFunction(handler)) {
+    offset = 1
+    path = handler
+  }
+
+  const callbacks = flatten([].slice.call(arguments, offset))
+
+  if (callbacks.length === 0) {
+    throw new TypeError('argument handler is required')
+  }
+
+  for (let fn of callbacks) {
+    if (!isFunction(fn)) {
+      throw new TypeError('argument handler must be a function')
+    }
+
+    const layer = new Layer(
+      path,
+      {
+        sensitive: this.$options.caseSensitive,
+        strict: false,
+        end: false
+      },
+      fn
+    )
+
+    layer.route = undefined
+
+    this.stack.push(layer)
+  }
+
+  return this
+}
+
+methods.concat('all').forEach(function(method) {
+  Methor.prototype[method] = function(path, ...args) {
+    var route = this.$route(path)
+    route[method].apply(route, args)
+    return this
+  }
+})
+
 Methor.prototype.installPlugin = function() {
-  const plugins = this.opts.plugins
+  const plugins = this.$options.plugins
   if (!plugins) return
   const _installed = this._installed
   for (const plugin of plugins) {
@@ -146,6 +248,11 @@ Methor.prototype.installPlugin = function() {
       plugin.apply(this, [])
     }
   }
+}
+
+Methor.prototype.$option = function setOption(k, value) {
+  LodashSet(this.$options, k, value)
+  return this
 }
 
 for (let key in util) {

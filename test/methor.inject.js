@@ -1,9 +1,10 @@
 'use strict'
 
+import regeneratorRuntime from 'regenerator-runtime'
+
 import Methor from '../lib/methor'
 import assert from 'assert'
 import got from 'got'
-import get from 'lodash.get'
 
 describe('methor.inject', () => {
   it('inject angular', done => {
@@ -16,33 +17,33 @@ describe('methor.inject', () => {
             'headers',
             'res',
             function(UA, headers2, res) {
-              assert.equal(UA, 'test header')
-              assert.equal(headers2['user-agent'], 'test header')
-              assert.equal(typeof res.json, 'function')
-              done()
-              res.end()
+              console.log(UA)
+              return { UA, headers2 }
             }
           ]
         }
       },
-      created({ port }) {
-        got('http://0.0.0.0:' + port, {
+      async created(port) {
+        const res = await got('http://0.0.0.0:' + port, {
           path: '/restserver',
           query: { method: 'test.login' },
           headers: {
             'user-agent': 'test header'
-          }
-        }).catch(err => console.log(err.response.body))
+          },
+          json: true
+        })
+        assert.equal(res.body.UA, 'test header')
+        assert.equal(res.body.headers2['user-agent'], 'test header')
+        done()
       }
     })
   })
   it('method.$inject', done => {
     function login(UA, headers2, res) {
-      assert.equal(UA, 'test header')
-      assert.equal(headers2['user-agent'], 'test header')
-      assert.equal(typeof res.json, 'function')
-      done()
-      res.end()
+      return {
+        UA,
+        headers2
+      }
     }
     login.$inject = ['req[headers][user-agent]', 'headers', 'res']
     new Methor({
@@ -52,14 +53,18 @@ describe('methor.inject', () => {
           login
         }
       },
-      created({ port }) {
-        got('http://0.0.0.0:' + port, {
+      async created(port) {
+        const res = await got('http://0.0.0.0:' + port, {
           path: '/restserver',
           query: { method: 'test.login' },
           headers: {
             'user-agent': 'test header'
-          }
-        }).catch(err => console.log(err.response.body))
+          },
+          json: true
+        })
+        assert.equal(res.body.UA, 'test header')
+        assert.equal(res.body.headers2['user-agent'], 'test header')
+        done()
       }
     })
   })
@@ -76,7 +81,7 @@ describe('methor.inject', () => {
           }
         }
       },
-      created({ port }) {
+      created(port) {
         got('http://0.0.0.0:' + port, {
           path: '/restserver',
           query: { method: 'test.login' },

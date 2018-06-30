@@ -5,13 +5,15 @@ import set from 'lodash.set'
 import chalk from 'chalk'
 
 function ValidateError(method, methodName, code, req, res, validate) {
-	this.code = code
-	this.request = req
-	this.response = res
-	this.methodName = methodName
-	this.method = method
-	this.validate = validate
-	this.stack = new Error().stack
+  this.name = 'ValidateError'
+  this.code = code
+  this.request = req
+  this.response = res
+  this.methodName = methodName
+  this.method = method
+  this.validate = validate
+  this.stack = new Error().stack
+  Error.captureStackTrace(this, this.constructor)
 }
 
 ValidateError.prototype = Object.create(Error.prototype)
@@ -20,116 +22,188 @@ ValidateError.prototype.constructor = ValidateError
 const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
 
 export default function(opts) {
-	return function install() {
-		if (!opts.handler) throw new TypeError('opts.handler is required')
-		const { isRegexp, isFunction, isUndef, isArray, warn } = this
-		this.beforeEnter((req, res, next) => {
-			const methodName = req.query.method
+  return function install() {
+    if (!opts.handler) throw new TypeError('opts.handler is required')
+    const {
+      isRegexp,
+      isFunction,
+      isUndef,
+      isArray,
+      isString,
+      isObject,
+      warn
+    } = this
+    this.beforeEnter(function(req, res, next) {
+      const methodName = req.query.method
 
+      const method = this.methods[methodName]
 
-			const method = this.methods[methodName]
+      const handlerError = (code, validate) => {
+        setTimeout(() => {
+          if (!res.finished) {
+            warn(
+              'Seem like you have not handler for code ' + chalk.cyan(code),
+              'Validator'
+            )
+          }
+        }, 5e3)
+        opts.handler(
+          new ValidateError(method, methodName, code, req, res, validate)
+        )
+      }
 
-			const handlerError = (code, validate) => {
-				setTimeout(() => {
-					if (!res.finished) {
-						warn(
-							'Seem like you have not handler for code ' + chalk.cyan(code),
-							'Validator'
-						)
-					}
-				}, 5e3)
-				opts.handler(
-					new ValidateError(method, methodName, code, req, res, validate)
-				)
-			}
+      if (!methodName) {
+        return handlerError('MISSING_METHODNAME')
+      }
 
-			if (!methodName) {
-				return handlerError('MISSING_METHODNAME')
-			}
-
-			if (!method) {
-				return handlerError('METHOD_NONEXIST')
-			}
+      if (!method) {
+        return handlerError('METHOD_NONEXIST')
+      }
 
       if (!method.validate) return next()
 
+      let params, isPayload
 
-			let params, isPayload
+      try {
+        if (
+          method.validate &&
+          method.validate.__type &&
+          method.validate.__type == 'payload'
+        ) {
+          params = JSON.parse(req.query.payload)
+          isPayload = true
+        } else {
+          params = req.query
+          isPayload = false
+        }
+      } catch (err) {
+        return handlerError('INVALID_PAYLOAD')
+      }
 
-			try {
-				if (
-					method.validate &&
-					method.validate.type &&
-					method.validate.type == 'payload'
-				) {
-					params = JSON.parse(req.query.payload)
-					isPayload = true
-				} else {
-					params = req.query
-					isPayload = false
-				}
-			} catch (err) {
-				return handlerError('INVALID_PAYLOAD')
-			}
+      const stack = []
 
-			for (let validate of method.validate) {
-				const {
-					regex,
-					option,
-					transform,
-					trim = false,
-					type = String
-				} = validate
-				let param = get(params, validate.name)
-				if (isUndef(param)) return handlerError('MISSING_PARAM', validate)
+      /**
+       * Parse a validate object
+       *
+       * Possiable cases:
+       *  - {test: String}
+       *  - {test: {type: String}}
+       *  - [{type: String, name: 'test}]
+       *  - ['test']
+       *
+       * */
 
-				if (isFunction(transform)) {
-					set(params, validate.name, transform(param))
-				}
+      if (isFunction(method.validate)) {
+        method.validate = this.betterhandler(method.validate)
+      }
 
-				// String
-				if (type == String) {
-					if (trim === true) {
-						set(params, validate.name, param.trim())
-					}
-					if (isRegexp(regex) && !regex.test(param)) {
-						return handlerError('INVALID_PARAM', validate)
-					}
-					if (!param || param == '' || param == null)
-						return handlerError('INVALID_PARAM', validate)
-					set(params, validate.name, param.toString())
-				}
+      if (isObject(method.validate)) {
+        for (let k in method.validate) {
+          let opt = method.validate[k]
+          stack.push(
+            Object.assign({ name: k, type: String }, isObject(opt) ? opts : {})
+          )
+        }
+      }
+      if (isArray(method.validate)) {
+        for (let validate of method.validate) {
+          if (isString(validate)) {
+            stack.push({
+              type: String,
+              name: validate
+            })
+          } else {
+            stack.push(validate)
+          }
+        }
+      }
 
-				// Number
-				if (type == Number) {
-					if (!isNumber(param)) return handlerError('INVALID_PARAM', validate)
-					set(params, validate.name, parseInt(param))
-				}
+      for (let validate of stack) {
+        const {
+          regex,
+          option,
+          max,
+          min,
+          transform,
+          trim = false,
+          type = String,
+          maxlength,
+          uppercase = false,
+          lowercase = false,
+          minlength
+        } = validate
+        let param = get(params, validate.name)
+        if (isUndef(param)) return handlerError('MISSING_PARAM', validate)
 
-				// Array
-				if (type == Array) {
-					if (!isArray(param)) return handlerError('INVALID_PARAM', validate)
-				}
+        // String
+        if (type == String) {
+          if (trim === true) {
+            set(params, validate.name, param.trim())
+          }
+          if (isRegexp(regex) && !regex.test(param)) {
+            return handlerError('INVALID_PARAM', validate, 'TEST_FAIL_REGEX')
+          }
+          if (!param || param == '' || param == null) {
+            return handlerError('INVALID_PARAM', validate, 'EMPTY_PARAM')
+          }
+          if (param.length) {
+            if (minlength && param.length < minlength) {
+              return handlerError('INVALID_PARAM', validate, 'MIN_LENGTH')
+            }
+            if (maxlength && param.length > maxlength) {
+              return handlerError('INVALID_PARAM', validate, 'MAX_LENGTH')
+            }
+          }
+          set(params, validate.name, param.toString())
+          if (uppercase) {
+            set(params, validate.name, param.toUpperCase())
+          }
+          if (lowercase) {
+            set(params, validate.name, param.toLowerCase())
+          }
+        }
 
-				// Boolean
-				if (type == Boolean) {
-					if (param != true && param != false)
-						return handlerError('INVALID_PARAM', validate)
-				}
+        // Number
+        if (type == Number) {
+          if (!isNumber(param)) {
+            return handlerError('INVALID_PARAM', validate)
+          }
+          if (min && min < param) {
+            return handlerError('INVALID_PARAM', validate, 'NUMBER_MIN')
+          }
+          if (min && param > max) {
+            return handlerError('INVALID_PARAM', validate, 'NUMBER_MAX')
+          }
+          set(params, validate.name, parseInt(param))
+        }
 
-				if (isFunction(option)) {
-					let result = option.bind(Object.assign(params, { isNumber }))(param)
-					if (isUndef(result) || result != true) {
-						return handlerError('INVALID_PARAM', validate)
-					}
-				}
-			}
+        // Array
+        if (type == Array) {
+          if (!isArray(param)) return handlerError('INVALID_PARAM', validate)
+        }
 
-			if (isPayload) {
-				req.query.payload = params
-			}
+        // Boolean
+        if (type == Boolean) {
+          if (param != true && param != false)
+            return handlerError('INVALID_PARAM', validate)
+        }
 
-			next()
-		})
-	}
+        if (isFunction(option)) {
+          let result = option.bind(Object.assign(params, { isNumber }))(param)
+          if (isUndef(result) || result != true) {
+            return handlerError('INVALID_PARAM', validate)
+          }
+        }
+        if (isFunction(transform)) {
+          set(params, validate.name, transform(param))
+        }
+      }
+
+      if (isPayload) {
+        req.query.payload = params
+      }
+
+      next()
+    })
+  }
 }

@@ -1,33 +1,23 @@
 'use strict'
 
 import finalhandler from 'finalhandler'
-import {Server} from 'http'
+import http from 'http'
 
-export default function Listen() {
-	if (this.$server_listening) {
-    throw new TypeError('cant call this method 2 times')
-  }
-	const { opts, router, server, isNull } = this
-	const args = [
-		opts.port || process.env.PORT,
-		() => {
-			let info = {
-				port: (opts.port && !isNull(opts.port)) ? opts.port : server.address().port,
-				router,
-				server
-			}
-			opts.created && opts.created.bind(info)(info)
-		}
-	]
-	if (!args[0] || args[0] == null) {
-		args.shift()
-	}
+export default function Listen(port, fn, _server) {
+  const { $options: opts, isFunction } = this
+  const server =
+    _server ||
+    http.createServer((req, res) => {
+      this(req, res, finalhandler(req, res))
+    })
 
-	if (!(server instanceof Server))
-		throw new TypeError('options.server must be abstract of http.Server')
-
-	this.$server_listening = true
-	server.listen(...args).on('request', (req, res) => {
-		router(req, res, finalhandler(req, res))
-	})
+  server.listen(port, () => {
+    const port = server.address().port
+    this.port = port
+    if (isFunction(opts.created)) {
+      opts.created.call(this, port, server)
+      this.$emit('server.created', port)
+      isFunction(fn) && fn(port)
+    }
+  })
 }

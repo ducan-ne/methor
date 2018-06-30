@@ -6,69 +6,49 @@ import {
   isString,
   isFunction,
   bind,
-  isArray
+  isArray,
+  identity,
+  isUndef
 } from './util'
 
-const generateRegEx = name => {
-  return new RegExp('\\$?' + name + '\\.?(.+)?$')
-}
-
-export default function(...args) {
+export default function Restserver(...args) {
   const [req, res, next] = args
-  const methodName = req.query.method
-  const inject = [] // bind to method
+  const methods = this.methods
+  const that = this
 
-  let method = this.methods[methodName]
-
-  if (!method) {
-    this.warn(`method ${methodName} not exist`)
-    return next()
-  }
-
-  const regexs = {
-    req: [generateRegEx('(req|request)'), req],
-    res: [generateRegEx('(res|resp|request)'), res],
-    headers: [generateRegEx('headers'), req.headers],
-    next: [generateRegEx('next'), next]
-  }
-
-  for (let key in this.services) {
-    const service = this.services[key]
-    regexs[key] = [generateRegEx(key), service]
-  }
-
-  const setInject = param => {
-    for (let key in regexs) {
-      // check all regexs
-      const [regex, obj] = regexs[key] // [0] -> generateRegEx, 1 -> object
-      if (regex.test(param)) {
-        // if ok
-        let matches = param.match(regex),
-          name
-        if (matches && matches[1]) {
-          // if matched, name will be set to matches[last]
-          name = matches[matches.length - 1]
-        }
-        if (name) {
-          return inject.push(getProperty(obj, name))
-        }
-        return inject.push(obj)
-      }
+  const $next = (callbacks, i = 0) => {
+    if (isUndef(callbacks[i])) {
+      return Main()
     }
-    inject.push(undefined)
+    const callback = callbacks[i]
+    this.BetterHandler(callback, req, res, function(err) {
+      // next
+      if (isString(err)) {
+        // next(methodName)
+        req.query.method = err
+        return Restserver(...args)
+      } else {
+        $next(callbacks, ++i)
+      }
+    })
   }
 
-  if (isArray(method.$inject)) {
-    method.$inject.map(setInject)
-  } else if (isFunction(method)) {
-    const params = getParamFunc(method)
-    params.map(setInject)
-  } else if (isArray(method)) {
-    method.slice(0, -1).map(setInject)
-    method = method[method.length - 1]
-    if (!isFunction(method)) throw new TypeError('argument handler is required')
-  }
+  const beforeEnter = [...this._beforeEnter, this.$options.beforeEnter].filter(
+    identity
+  )
 
-  let result = bind(method, this.opts.funcs, args)(...inject)
-  this.handlerResponse(...args, result)
+  $next(beforeEnter)
+
+  function Main() {
+    const methodName = req.query.method
+
+    let method = methods[methodName]
+
+    if (!method) {
+      that.warn(`method ${methodName} not exist`)
+      that.$emit('method.not.exist', req, res)
+      return next()
+    }
+    that.BetterHandler(method, req, res, next)
+  }
 }

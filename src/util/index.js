@@ -29,7 +29,9 @@ export function isObject(v) {
 }
 
 export function isFunction(v) {
-  return ['GeneratorFunction', 'AsyncFunction', 'Function'].includes(_typeof(v))
+  return !!~['GeneratorFunction', 'AsyncFunction', 'Function'].indexOf(
+    _typeof(v)
+  )
 }
 
 export function isNumber(v) {
@@ -42,6 +44,10 @@ export function isArray(v) {
 
 export function isString(v) {
   return _typeof(v) == 'String'
+}
+
+export function isBoolean(v) {
+  return _typeof(v) == 'Boolean'
 }
 
 export function bind(fn, ctx, [req, res, next]) {
@@ -68,17 +74,39 @@ export function isPromise(v) {
   return v && isFunction(v.then)
 }
 
-export function getAllKeys(obj) {
-  const keys = []
-  for (let [key, value] of Object.entries(obj)) {
-    // if (isChildrenObject ) {
-    keys.push(key)
-    if (isObject(value) && !isArray(value) && !isFunction(value)) {
-      let subkeys = getAllKeys(value)
-      for (let subkey of subkeys) {
-        keys.push(key + '.' + subkey)
+export function getAllMethod(obj, prefix = '', separate = '.') {
+  const leftBracket = { '[]': '[', '.': '.', '/': '/' }[separate]
+  const rightBracket = { '[]': ']' }[separate] || ''
+
+  function reduce(res, el) {
+    if (obj[el] !== null && isObject(obj[el])) {
+      let _prefix = prefix
+      if (separate === '[]') {
+        if (prefix === '') {
+          _prefix += el
+        } else {
+          _prefix += '[' + el + ']'
+        }
+      } else if (separate === '/') {
+        _prefix += prefix === '' ? el : '/' + el
+      } else {
+        _prefix += el
       }
+      return Object.assign(res, getAllMethod(obj[el], _prefix, separate))
     }
+    if (isFunction(isArray(obj[el]) ? obj[el].slice().pop() : obj[el])) {
+      res[prefix + leftBracket + el + rightBracket] = obj[el]
+    }
+    return res
+  }
+  let keys = Object.keys(obj).reduce(reduce, {})
+  if (prefix === '' && separate == '.') {
+    // console.log(prefix)
+    keys = Object.assign(
+      keys,
+      getAllMethod(obj, prefix, '[]'),
+      getAllMethod(obj, prefix, '/')
+    )
   }
   return keys
 }
@@ -133,9 +161,38 @@ export function capitalize(str) {
 
 export function requireall(dir) {
   return fs.readdirSync(dir).reduce((obj, file) => {
-    if (file == 'index.js') return obj
+    if (file == 'index.js' || file.split('.').pop() != 'js') return obj
     let fileName = file.split('.')[0]
     obj[fileName] = require(path.resolve(dir, file))
     return obj
   }, {})
+}
+
+export function flatten(arr) {
+  return [].concat.apply([], arr)
+}
+
+export const defer =
+  typeof setImmediate === 'function'
+    ? setImmediate
+    : function(fn) {
+        process.nextTick(fn.bind.apply(fn, arguments))
+      }
+
+export const setPropertyOf =
+  Object.setPrototypeOf ||
+  ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
+
+function setProtoOf(obj, proto) {
+  obj.__proto__ = proto
+  return obj
+}
+
+function mixinProperties(obj, proto) {
+  for (var prop in proto) {
+    if (!obj.hasOwnProperty(prop)) {
+      obj[prop] = proto[prop]
+    }
+  }
+  return obj
 }

@@ -1,7 +1,7 @@
 {
   "name": "methor",
   "version": "1.2.19",
-  "description": "/restserver?method=user.login&class=",
+  "description": "/restserver?method=user.login",
   "main": "lib/methor.js",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   "scripts": {
     "test": "npm run build && mocha --require babel-register",
     "babel-node": "babel-node --presets=env",
-    "start": "nodemon --exec \"babel-node ./example/index.js\"",
+    "start": "nodemon --exec babel-node ./example/index.js",
     "build": "babel src -d lib",
     "serve": "node lib/index.js"
   },

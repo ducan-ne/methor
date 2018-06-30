@@ -1,12 +1,15 @@
 'use strict'
 
-export default function (server, port) {
-  if (!this.isNumber(port) && !this.isNull(port))
-    throw new TypeError('invalid typename port')
+import finalhandler from 'finalhandler'
 
-  this.opts.port = port
-  this.server = server
-  this.listen()
+export default function(server, port) {
+  if (!this.isNumber(port) && !this.isNull(port))
+    throw new TypeError('Invalid port')
+
+  this.$options.port = port
+  server.on('request', (req, res) => {
+    this(req, res, finalhandler(req, res))
+  })
 
   return this
 }
