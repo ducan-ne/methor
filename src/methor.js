@@ -1,6 +1,10 @@
-'use strict'
+// @flow
 
 import regeneratorRuntime from 'regenerator-runtime'
+
+type ancms = {
+  addRoute: string
+}
 
 import { Server } from 'http'
 import chalk from 'chalk'
@@ -35,9 +39,9 @@ import LodashSet from 'lodash.set'
 import Restserver from './restserver'
 
 import { resolve } from 'path'
-import { EventEmitter } from 'events'
+import events from 'events'
 
-function Methor(opts) {
+function Methor(opts: Object): Methor {
   if (!(this instanceof Methor)) {
     return new Methor(opts)
   }
@@ -85,7 +89,7 @@ function Methor(opts) {
   }
   setPropertyOf(methor, this)
 
-  const event = new EventEmitter()
+  const event = new events.EventEmitter()
   methor.$on = event.on
   methor.$off = event.removeListener
   methor.$emit = event.emit
@@ -262,7 +266,9 @@ for (let key in util) {
 ;['validator'].map(name => {
   Object.defineProperty(Methor, capitalize(name), {
     get() {
-      return require(resolve(__dirname, 'plugins', name)).default
+      let pathname = resolve(__dirname, 'plugins', name)
+      // $flow-disable-line
+      return require(pathname).default
     }
   })
 })

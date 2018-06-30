@@ -1,4 +1,4 @@
-'use strict'
+// @flow
 
 import {
   isString,
@@ -9,7 +9,13 @@ import {
   bind
 } from '../util'
 
-export default function addRoute(router, path) {
+type Route = {
+  path: string,
+  handler: Function,
+  children: Array
+}
+
+export default function addRoute(router: Route, path: string): boolean {
   const _isFunction = isFunction(router)
   if (_isFunction && isString(path)) {
     router.path = path
