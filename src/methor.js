@@ -32,7 +32,7 @@ import Layer from './internal/Layer'
 import Init from './internal/Init'
 import Listen from './internal/Listen'
 import Mount from './internal/Mount'
-import addRoute from './internal/AddRoute'
+import addRoute from './internal/add-route'
 import Handler from './internal/Handler'
 import LodashSet from 'lodash.set'
 

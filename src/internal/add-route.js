@@ -10,12 +10,13 @@ import {
 } from '../util'
 
 type Route = {
+  method: string,
   path: string,
   handler: Function,
-  children: Array
+  children: Route
 }
 
-export default function addRoute(router: Route, path: string): boolean {
+export default function addRoute(router: Route, path: string): void {
   const _isFunction = isFunction(router)
   if (_isFunction && isString(path)) {
     router.path = path

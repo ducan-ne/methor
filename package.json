@@ -34,9 +34,11 @@
     "router": "^1.3.2"
   },
   "scripts": {
+    "flow": "flow check",
     "test": "npm run build && mocha --require babel-register",
     "babel-node": "babel-node --presets=env",
     "start": "nodemon --exec babel-node ./example/index.js",
+    "commit": "git-cz",
     "build": "babel src -d lib",
     "serve": "node lib/index.js"
   },
