@@ -26,14 +26,14 @@ import * as util from './util'
 import Router from 'router'
 import methods from 'methods'
 
-import Route from './internal/Route'
-import Layer from './internal/Layer'
+import Route from './internal/route'
+import Layer from './internal/layer'
 
-import Init from './internal/Init'
-import Listen from './internal/Listen'
-import Mount from './internal/Mount'
+import Init from './internal/init'
+import Listen from './internal/listen'
+import Mount from './internal/mount'
 import addRoute from './internal/add-route'
-import Handler from './internal/Handler'
+import Handler from './internal/handler'
 import LodashSet from 'lodash.set'
 
 import Restserver from './restserver'
@@ -111,7 +111,7 @@ Methor.prototype.constructor = Server
 Methor.prototype.handler = Handler
 Methor.prototype.init = Init
 Methor.prototype.listen = Listen
-Methor.prototype.BetterHandler = require('./internal/BetterHandler').default
+Methor.prototype.BetterHandler = require('./internal/better-handler').default
 
 Methor.prototype.beforeEnter = function beforeEnter(...callbacks) {
   if (callbacks.length == 0) {
