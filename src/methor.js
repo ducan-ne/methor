@@ -1,10 +1,6 @@
 // @flow
 
-import regeneratorRuntime from 'regenerator-runtime'
-
-type ancms = {
-  addRoute: string
-}
+import 'babel-polyfill'
 
 import { Server } from 'http'
 import chalk from 'chalk'
@@ -32,6 +28,7 @@ import Layer from './internal/layer'
 import Init from './internal/init'
 import Listen from './internal/listen'
 import Mount from './internal/mount'
+import createMethod from './internal/create-method'
 import addRoute from './internal/add-route'
 import Handler from './internal/handler'
 import LodashSet from 'lodash.set'
@@ -41,7 +38,9 @@ import Restserver from './restserver'
 import { resolve } from 'path'
 import events from 'events'
 
-function Methor(opts: Object): Methor {
+import type { HttpRequest, HttpResponse, MethorOptions } from './types'
+
+function Methor(opts: MethorOptions): Methor {
   if (!(this instanceof Methor)) {
     return new Methor(opts)
   }
@@ -84,7 +83,7 @@ function Methor(opts: Object): Methor {
 
   this.installPlugin()
 
-  function methor(req, res, next) {
+  function methor(req: HttpRequest, res: HttpResponse, next: ?Function) {
     methor.handler(req, res, next)
   }
   setPropertyOf(methor, this)
@@ -93,7 +92,7 @@ function Methor(opts: Object): Methor {
   methor.$on = event.on
   methor.$off = event.removeListener
   methor.$emit = event.emit
-  methor.$removeAllListeners = event.removeAllListeners
+  methor.$offall = event.removeAllListeners
 
   methor.stack = []
   methor.params = {}
@@ -113,7 +112,9 @@ Methor.prototype.init = Init
 Methor.prototype.listen = Listen
 Methor.prototype.BetterHandler = require('./internal/better-handler').default
 
-Methor.prototype.beforeEnter = function beforeEnter(...callbacks) {
+Methor.prototype.beforeEnter = function beforeEnter(
+  ...callbacks: Array<Function>
+) {
   if (callbacks.length == 0) {
     throw new TypeError('argument handler is required')
   }
@@ -126,16 +127,24 @@ Methor.prototype.beforeEnter = function beforeEnter(...callbacks) {
 }
 
 Methor.prototype.handlerResponse = async function handlerResponse(
-  req,
-  res,
-  result
-) {
+  req: HttpRequest,
+  res: HttpResponse,
+  result: any
+): Promise<void> {
   if (isPromise(result)) {
-    result = await result
+    try {
+      result = await result
+    } catch (err) {
+      if (isFunction(this.$options.catchHandler)) {
+        this.$options.catchHandler(err, req, res)
+      } else {
+        console.error(err)
+      }
+    }
   }
 
   if (res.finished) {
-    return false
+    return
   }
 
   if (result == undefined || result == null) {
@@ -149,11 +158,14 @@ Methor.prototype.handlerResponse = async function handlerResponse(
   if (isObject(result) || isArray(result)) {
     return res.json(result)
   }
-  res.end(result.toString())
+  return res.end(result.toString())
 }
 
-Methor.prototype.warn = function warn(msg, plugin) {
-  if (process.env.NODE_ENV != 'development') {
+Methor.prototype.warn = function warn(msg: any, plugin: string): void {
+  if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'test'
+  ) {
     console.warn(
       chalk.yellow('[') +
         ' Methor ' +
@@ -167,7 +179,7 @@ Methor.prototype.warn = function warn(msg, plugin) {
   }
 }
 
-Methor.prototype.$route = function $route(path) {
+Methor.prototype.$route = function $route(path: string): Object {
   const opts = this.$options
   const route = new Route(path)
 
@@ -181,7 +193,7 @@ Methor.prototype.$route = function $route(path) {
     handle
   )
 
-  function handle(req, res, next) {
+  function handle(req: HttpRequest, res: HttpResponse, next: Function) {
     route.dispatch(req, res, next)
   }
 
@@ -190,11 +202,11 @@ Methor.prototype.$route = function $route(path) {
   return route
 }
 
-Methor.prototype.middleware = function use(handler) {
+Methor.prototype.middleware = function use(handler: string | Function) {
   let offset = 0
-  let path = '/'
+  let path: string = '/'
 
-  if (!isFunction(handler)) {
+  if (typeof handler === 'string') {
     offset = 1
     path = handler
   }
@@ -228,15 +240,15 @@ Methor.prototype.middleware = function use(handler) {
   return this
 }
 
-methods.concat('all').forEach(function(method) {
-  Methor.prototype[method] = function(path, ...args) {
+methods.concat('all').forEach(function(method: string): void {
+  Methor.prototype[method] = function(path: string, ...args: any) {
     var route = this.$route(path)
     route[method].apply(route, args)
     return this
   }
 })
 
-Methor.prototype.installPlugin = function() {
+Methor.prototype.installPlugin = function(): void {
   const plugins = this.$options.plugins
   if (!plugins) return
   const _installed = this._installed
@@ -254,7 +266,7 @@ Methor.prototype.installPlugin = function() {
   }
 }
 
-Methor.prototype.$option = function setOption(k, value) {
+Methor.prototype.$option = function setOption(k: string, value: any): Methor {
   LodashSet(this.$options, k, value)
   return this
 }
@@ -272,5 +284,7 @@ for (let key in util) {
     }
   })
 })
+
+Methor.createMethod = createMethod
 
 module.exports = Methor

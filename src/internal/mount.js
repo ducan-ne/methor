@@ -1,8 +1,9 @@
 'use strict'
 
 import finalhandler from 'finalhandler'
+import { Server } from 'http'
 
-export default function(server, port) {
+export default function(server: Server, port: string): any {
   if (!this.isNumber(port) && !this.isNull(port))
     throw new TypeError('Invalid port')
 

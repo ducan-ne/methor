@@ -1,85 +1,95 @@
-'use strict'
+// @flow
 
 import get from 'lodash.get'
 import fs from 'fs'
 import path from 'path'
 
-export function _typeof(v) {
+export function _typeof(v: any): string {
   return Object.prototype.toString.call(v).slice(8, -1)
 }
 
-export function isNull(v) {
+export function isNull(v: any): boolean {
   return _typeof(v) == 'Null'
 }
 
-export function isUndef(v) {
+export function isUndef(v: any): boolean {
   return _typeof(v) == 'Undefined' || _typeof(v) == 'Null'
 }
 
-export function isRegexp(v) {
+export function isRegexp(v: any): boolean {
   return _typeof(v) == 'RegExp'
 }
 
-export function isDef(v) {
+export function isDef(v: any): boolean {
   return _typeof(v) != 'Undefined' || _typeof(v) != 'Null'
 }
 
-export function isObject(v) {
+export function isObject(v: any): boolean {
   return _typeof(v) == 'Object'
 }
 
-export function isFunction(v) {
+export function isFunction(v: any): boolean %checks {
   return !!~['GeneratorFunction', 'AsyncFunction', 'Function'].indexOf(
     _typeof(v)
   )
 }
 
-export function isNumber(v) {
+export function isNumber(v: any): boolean {
   return _typeof(v) == 'Number'
 }
 
-export function isArray(v) {
+export function isArray(v: any): boolean {
   return _typeof(v) == 'Array'
 }
 
-export function isString(v) {
+export function isString(v: any): boolean {
   return _typeof(v) == 'String'
 }
 
-export function isBoolean(v) {
+export function isBoolean(v: any): boolean {
   return _typeof(v) == 'Boolean'
 }
 
-export function bind(fn, ctx, [req, res, next]) {
-  let proxy = new Proxy(ctx || {}, {
-    get(target, name) {
-      // res.end('312321')
-      if (req[name]) {
-        let _req = req[name]
-        if (isFunction(_res)) return _req.bind(req)
-        return _req
-      }
-      if (res[name]) {
-        let _res = res[name]
-        if (isFunction(_res)) return _res.bind(res)
-        return _res
-      }
-      return target[name]
-    }
-  })
-  return fn.bind(proxy)
-}
+// --- deprecated ----
+// export function bind(fn, ctx, [req, res, next]) {
+//   let proxy = new Proxy(ctx || {}, {
+//     get(target, name) {
+//       // res.end('312321')
+//       if (req[name]) {
+//         let _req = req[name]
+//         if (isFunction(_res)) return _req.bind(req)
+//         return _req
+//       }
+//       if (res[name]) {
+//         let _res = res[name]
+//         if (isFunction(_res)) return _res.bind(res)
+//         return _res
+//       }
+//       return target[name]
+//     }
+//   })
+//   return fn.bind(proxy)
+// }
 
-export function isPromise(v) {
+export function isPromise(v: any): boolean {
   return v && isFunction(v.then)
 }
 
-export function getAllMethod(obj, prefix = '', separate = '.') {
+type Method = {
+  [key: any]: Function
+}
+
+export function getAllMethod(
+  obj: Object,
+  prefix?: string = '',
+  separate?: string = '.'
+) {
   const leftBracket = { '[]': '[', '.': '.', '/': '/' }[separate]
   const rightBracket = { '[]': ']' }[separate] || ''
 
-  function reduce(res, el) {
-    if (obj[el] !== null && isObject(obj[el])) {
+  function reduce(res: Object, el: string) {
+    let method = obj[el]
+    if (method !== null && isObject(method)) {
       let _prefix = prefix
       if (separate === '[]') {
         if (prefix === '') {
@@ -94,13 +104,18 @@ export function getAllMethod(obj, prefix = '', separate = '.') {
       }
       return Object.assign(res, getAllMethod(obj[el], _prefix, separate))
     }
-    if (isFunction(isArray(obj[el]) ? obj[el].slice().pop() : obj[el])) {
-      res[prefix + leftBracket + el + rightBracket] = obj[el]
+    if (isFunction(isArray(method) ? method.slice().pop() : method)) {
+      let name =
+        prefix +
+        (prefix === '' ? '' : leftBracket) +
+        el +
+        (prefix === '' ? '' : rightBracket)
+      res[method.__name || name] = method
     }
     return res
   }
-  let keys = Object.keys(obj).reduce(reduce, {})
-  if (prefix === '' && separate == '.') {
+  let keys: Method = Object.keys(obj).reduce(reduce, {})
+  if (prefix === '' && separate === '.') {
     // console.log(prefix)
     keys = Object.assign(
       keys,
@@ -111,28 +126,27 @@ export function getAllMethod(obj, prefix = '', separate = '.') {
   return keys
 }
 
-export function cleanPath(path) {
+export function cleanPath(path: string): string {
   return path.replace(/\/\//g, '/')
 }
 
-export const identity = _ => _
+export const identity = (_: any) => _
 
-// https://stackoverflow.com/questions/8556673/get-javascript-object-property-via-key-name-in-variable
-export function getProperty(targetObj, keyPath) {
+export function getProperty(targetObj: any, keyPath: string) {
   return get(targetObj, keyPath)
-  var keys = keyPath.split('.')
-  if (keys.length == 0) return undefined
-  keys = keys.reverse()
-  var subObject = targetObj
-  while (keys.length) {
-    var k = keys.pop()
-    if (!subObject.hasOwnProperty(k)) {
-      return undefined
-    } else {
-      subObject = subObject[k]
-    }
-  }
-  return subObject
+  // var keys = keyPath.split('.')
+  // if (keys.length == 0) return undefined
+  // keys = keys.reverse()
+  // var subObject = targetObj
+  // while (keys.length) {
+  //   var k = keys.pop()
+  //   if (!subObject.hasOwnProperty(k)) {
+  //     return undefined
+  //   } else {
+  //     subObject = subObject[k]
+  //   }
+  // }
+  // return subObject
 }
 
 // get-parameter-names
@@ -140,47 +154,51 @@ export const getParamFunc = (function() {
   const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm
   const DEFAULT_PARAMS = /=[^,]+/gm
   const FAT_ARROWS = /=>.*$/gm
-  return function(fn) {
-    var code = fn
+  return function(fn: Function): Array<any> {
+    let code = fn
       .toString()
       .replace(COMMENTS, '')
       .replace(FAT_ARROWS, '')
       .replace(DEFAULT_PARAMS, '')
 
-    var result = code
-      .slice(code.indexOf('(') + 1, code.indexOf(')'))
-      .match(/([^\s,]+)/g)
+    let result: Array<any> =
+      code
+        .slice(code.indexOf('(') + 1, code.indexOf(')'))
+        .match(/([^\s,]+)/g) || []
 
-    return result === null ? [] : result
+    return result
   }
 })()
 
-export function capitalize(str) {
+export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-export function requireall(dir) {
+export function requireall(dir: string): Object {
   return fs.readdirSync(dir).reduce((obj, file) => {
     if (file == 'index.js' || file.split('.').pop() != 'js') return obj
     let fileName = file.split('.')[0]
-    obj[fileName] = require(path.resolve(dir, file))
+    let fullpath: string = path.resolve(dir, file)
+    obj[fileName] = require(fullpath)
     return obj
   }, {})
 }
 
-export function flatten(arr) {
+export function flatten(arr: any): any {
   return [].concat.apply([], arr)
 }
 
 export const defer =
   typeof setImmediate === 'function'
     ? setImmediate
-    : function(fn) {
+    : function(fn: Function, ...otherArgs: any) {
+        // $flow-disable-line
         process.nextTick(fn.bind.apply(fn, arguments))
       }
 
 export const setPropertyOf =
   Object.setPrototypeOf ||
+  // $flow-disable-line
   ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
 
 function setProtoOf(obj, proto) {

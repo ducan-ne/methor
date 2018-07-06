@@ -3,6 +3,7 @@
  * Copyright(c) 2013 Roman Shtylman
  * Copyright(c) 2014 Douglas Christopher Wilson
  * MIT Licensed
+ * @flow
  */
 
 'use strict'
@@ -13,27 +14,39 @@
  */
 
 import pathRegexp from 'path-to-regexp'
+import type { HttpRequest, HttpResponse } from '../types'
+import Route from './route'
 
 const hasOwnProperty = Object.prototype.hasOwnProperty
 
 export default class Layer {
-  constructor(path, options, fn) {
+  handle: Function
+  name: string
+  params: { [key: string]: any } | void
+  path: string | void
+  regexp: any
+  keys: Array<string>
+  route: Route | void
+  method: string | void
+  //  handleRequest(): void;//prettier-ignore
+
+  constructor(path: string, options: Object, fn: Function) {
     const opts = options || {}
 
     this.handle = fn
     this.name = fn.name || '<anonymous>'
     this.params = undefined
     this.path = undefined
-    this.regexp = pathRegexp(path, (this.keys = []), opts)
+    this.keys = []
+    this.regexp = pathRegexp(path, this.keys, opts)
 
     // set fast path flags
     this.regexp.fast_star = path === '*'
     this.regexp.fast_slash = path === '/' && opts.end === false
   }
 
-  handleRequest(req, res, next) {
-    var fn = this.handle
-
+  handleRequest(req: HttpRequest, res: HttpResponse, next: Function): void {
+    let fn = this.handle
     if (fn.length > 3) {
       // not a standard request handler
       return next()
@@ -42,12 +55,13 @@ export default class Layer {
     try {
       fn(req, res, next)
     } catch (err) {
+      // catching "throw new Error"
       next(err)
     }
   }
 
-  match(path) {
-    var match
+  match(path: any) {
+    let match: Array<any> | void
 
     if (path != null) {
       // fast path non-ending match for / (any path matches)
@@ -79,13 +93,14 @@ export default class Layer {
     this.path = match[0]
 
     // iterate matches
-    var keys = this.keys
-    var params = this.params
+    let keys = this.keys
+    let params = this.params
 
-    for (var i = 1; i < match.length; i++) {
-      var key = keys[i - 1]
-      var prop = key.name
-      var val = decodeParam(match[i])
+    for (let i = 1; i < match.length; i++) {
+      let key = keys[i - 1]
+      // $flow-disable-line
+      let prop = key.name
+      let val = decodeParam(match[i])
 
       if (val !== undefined || !hasOwnProperty.call(params, prop)) {
         params[prop] = val

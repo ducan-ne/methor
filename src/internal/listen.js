@@ -1,9 +1,14 @@
-'use strict'
+// @flow
 
 import finalhandler from 'finalhandler'
 import http from 'http'
+import { Server } from 'http'
 
-export default function Listen(port, fn, _server) {
+export default function Listen(
+  port: number,
+  fn: Function,
+  _server: Server
+): void {
   const { $options: opts, isFunction } = this
   const server =
     _server ||
@@ -14,9 +19,10 @@ export default function Listen(port, fn, _server) {
   server.listen(port, () => {
     const port = server.address().port
     this.port = port
+    this.$options.port = port
     if (isFunction(opts.created)) {
       opts.created.call(this, port, server)
-      this.$emit('server.created', port)
+      this.$emit('server.created', port, server)
       isFunction(fn) && fn(port)
     }
   })

@@ -1,28 +1,15 @@
 // @flow
 
-import {
-  isString,
-  isFunction,
-  isObject,
-  isArray,
-  cleanPath,
-  bind
-} from '../util'
-
-type Route = {
-  method: string,
-  path: string,
-  handler: Function,
-  children: [Route]
-}
+import { isString, isFunction, isObject, isArray, cleanPath } from '../util'
+import type { Route } from '../types'
 
 export default function addRoute(router: Route, path: string): void {
-  const _isFunction: boolean = isFunction(router)
-  if (_isFunction && isString(path)) {
+  const RouterisFunction: boolean = isFunction(router)
+  if (RouterisFunction && isString(path)) {
     router.path = path
   }
-  if (isObject(router) || _isFunction) {
-    let callbacks = _isFunction
+  if (isObject(router) || RouterisFunction) {
+    let callbacks = RouterisFunction
       ? [router]
       : isArray(router.handler)
         ? router.handler
@@ -31,6 +18,7 @@ export default function addRoute(router: Route, path: string): void {
       throw new TypeError('argument handler is required')
     }
     let methods = (router.method || 'get')
+      .trim()
       .split(',')
       .map(function toLowerCase(method) {
         return method.toLowerCase() // convert all method to lower case

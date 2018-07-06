@@ -1,18 +1,19 @@
 'use strict'
 
-const Methor = require('../src/methor')
+const Methor = require('../lib/methor')
 const path = require('path')
 
 const user = {
   login: require('./methods/login'),
-  logout: require('./methods/logout')
+  logout: require('./methods/logout'),
+  register: require('./methods/register')
 }
 
 const http = require('http')
 
 const app = new Methor({
   // pathname: '/ancms',
-  // static: path.resolve(__dirname, '.', 'public'),
+  static: path.resolve(__dirname, '.', 'public'),
   port: 3002,
   methods: {
     user
@@ -30,7 +31,7 @@ const app = new Methor({
   routes: [
     {
       path: '/test',
-      router(req, res) {
+      handler(req, res) {
         return {
           ahihi: true
         }
@@ -39,7 +40,7 @@ const app = new Methor({
         {
           path: '/test1',
           method: 'POST',
-          router() {
+          handler() {
             this.this_is_a_func()
             return 'xin chao'
           }

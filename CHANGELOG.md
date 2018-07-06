@@ -1,0 +1,2 @@
+- methor.errorHandler => for Methor.handlerResponse
+- docs vuepress

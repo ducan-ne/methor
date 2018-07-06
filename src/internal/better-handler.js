@@ -1,15 +1,21 @@
-'use strict'
+// @flow
 
 import { getParamFunc, getProperty, isArray, isFunction } from '../util'
 import _get from 'lodash.get'
+import type { HttpResponse, HttpRequest } from '../types'
 
-function generateRegEx(name) {
-  return new RegExp('\\$?' + name + '\\.?(.+)?$')
+function generateRegEx(name: string): RegExp {
+  return new RegExp('(\\$?' + name + '\\.?(.+)?$)')
 }
 
-export default function(handler, req, res, next) {
+export default function(
+  handler: Function,
+  req: HttpRequest,
+  res: HttpResponse,
+  next: Function,
+  handlerIfNoRes: boolean = true
+): void {
   if (handler.name === 'MethorObject') {
-    handler = handler.__handler
   }
 
   const methodName = req.query.method
@@ -17,11 +23,11 @@ export default function(handler, req, res, next) {
   let calledNext = false
 
   const regexs = [
-    [generateRegEx('(req|request)'), req],
-    [generateRegEx('(res|resp|request)'), res],
-    [generateRegEx('(headers)'), req.headers],
+    [generateRegEx('req|request'), req],
+    [generateRegEx('res|resp|request'), res],
+    [generateRegEx('headers'), req.headers],
     [
-      generateRegEx('(next)'),
+      generateRegEx('next'),
       function(err) {
         calledNext = true
         next(err)
@@ -31,7 +37,7 @@ export default function(handler, req, res, next) {
 
   for (let key in this.services) {
     const service = this.services[key]
-    regexs[key] = [generateRegEx(key), service]
+    regexs.push([generateRegEx(key), service])
   }
 
   // ctx bind to function
@@ -96,7 +102,7 @@ export default function(handler, req, res, next) {
     }
     inject.push(val || undefined)
   }
-
   const result = handler.bind(ctxProxy)(...inject)
+  if (!handlerIfNoRes && !result) return
   calledNext === false && this.handlerResponse(req, res, result)
 }

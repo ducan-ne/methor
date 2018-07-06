@@ -54,7 +54,7 @@ export default function Init() {
   if (isString(opts.static)) {
     try {
       const serveStatic = require('serve-static')
-      router.use(serveStatic(opts.static))
+      this.middleware(serveStatic(opts.static))
     } catch (err) {
       throw new TypeError(
         'you must install "serve-static" to your dependencies'

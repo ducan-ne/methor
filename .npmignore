@@ -1,2 +1,7 @@
-src/
+src
 .vscode
+test
+TODOs.md
+.DS_STORE
+docs
+methor
