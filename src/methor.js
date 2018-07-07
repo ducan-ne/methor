@@ -313,7 +313,9 @@ Methor.prototype.use = function(plugin: any, opts: any): void {
   if (!plugins) {
     this.$options.plugins = []
   }
-  this.$options.plugins.push(isFunction(plugin) ? plugin(opts) : plugin)
+  this.$options.plugins.push(
+    isFunction(plugin) && plugin.name != 'install' ? plugin(opts) : plugin
+  )
   this.installPlugin()
   return this
 }

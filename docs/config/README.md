@@ -173,7 +173,7 @@ app.middleware(
 
 ### app.get, app.post, app.all, app.head....
 
-- Argument:
+- Arguments:
   `?pathname(string)`
   `handler(Function)`
 
@@ -181,6 +181,46 @@ Feature like express:
 
 ```js
 app.get(path, (req, res, next) => {})
+```
+
+### app.use
+
+- Use a plugin
+- Arguments:
+  `plugin(Function)`: required
+  `options`
+
+```js
+app.use(Methor.Validator, {
+  handler(err) {
+    const res = err.response
+    if (err.code == 'METHOD_NONEXIST') {
+      res.json({
+        message: `method ${err.methodName} not found`
+      })
+    }
+    if (err.code == 'INVALID_PARAM') {
+      res.json({
+        message: `param ${err.validate.name} is invalid`
+      })
+    }
+    if (err.code == 'MISSING_PARAM') {
+      res.json({
+        message: `param ${err.validate.name} is required`
+      })
+    }
+    if (err.code == 'INVALID_PARAM') {
+      res.json({
+        message: `param ${err.validate.name} is invalid`
+      })
+    }
+    if (err.code == 'MISSING_METHODNAME') {
+      res.json({
+        message: 'param method is required'
+      })
+    }
+  }
+})
 ```
 
 ## Mounting
