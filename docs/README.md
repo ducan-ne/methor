@@ -24,13 +24,13 @@ footer: MIT Licensed | Copyright © 2018-present clgtIO
 
 ```bash
 # install
-npm install --save methor
+npm install -g methor-cli
 
 # start develop
 
 methor
 # or
-methor create [appName]
+methor hello-world
 
 # different is methor create not answer anything
 ```
