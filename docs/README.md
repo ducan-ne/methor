@@ -31,8 +31,6 @@ npm install -g methor-cli
 methor
 # or
 methor hello-world
-
-# different is methor create not answer anything
 ```
 
 ::: tip Support

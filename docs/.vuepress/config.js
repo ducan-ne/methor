@@ -54,7 +54,7 @@ function genSidebarConfig(title) {
     {
       title,
       collapsable: false,
-      children: ['', 'method-define-ways', 'method-plugin-validate']
+      children: ['', 'method-define-ways', 'method-plugin-validate', 'plugin']
     }
   ]
 }

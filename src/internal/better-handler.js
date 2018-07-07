@@ -45,12 +45,15 @@ export default function(
   const ctx = Object.assign(
     {
       body: req.body,
+      query: req.query,
       headers: req.headers,
       userAgent: req.headers['user-agent'],
       end: res.end,
       setHeader: res.setHeader,
       $options: this.$options,
       methods: this.methods,
+      method: this.methods[methodName],
+      methodName,
       betterhandler: this.BetterHandler,
       next,
       req,

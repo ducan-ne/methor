@@ -6,7 +6,9 @@ describe('Plugin.BeforeEnter', function() {
   it('should can use perfect', async function() {
     const TestPlugin = function() {
       assert.equal(typeof this.beforeEnter, 'function')
-      this.beforeEnter((req, res, next) => {
+      this.beforeEnter(function(req, res, next) {
+        assert.equal(typeof this.method, 'function')
+        assert.equal(typeof this.methodName, 'string')
         assert.equal(typeof req.headers, 'object')
         next()
       })

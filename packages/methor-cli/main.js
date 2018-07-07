@@ -118,7 +118,7 @@ class Generator {
 
     console.log()
 
-    console.log('Done in ' + ms(Date.now() - this.start) + '.')
+    console.log('✨ Done in ' + ms(Date.now() - this.start) + '.')
   }
 
   generateOtherFile() {
