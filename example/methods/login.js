@@ -13,18 +13,9 @@ module.exports = [
   }
 ]
 
-// module.exports.validate = [
-//   {
-//     type: String,
-//     name: 'username'
-//   }
-// ]
-
-module.exports.validate = {
-  username: {
+module.exports.validate = [
+  {
     type: String,
-    option(val) {
-      return val === 'ancmsvn'
-    }
+    name: 'username'
   }
-}
+]

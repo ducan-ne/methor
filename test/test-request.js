@@ -8,20 +8,16 @@ const expect = expect
 
 function testMethod() {
   describe('method user.login', function() {
-    it('should return user login', function(done) {
-      got('http://0.0.0.0:3004/restserver', {
+    it('should return user login', function() {
+      return got('http://0.0.0.0:3004/restserver', {
         query: {
           method: 'user.login',
           username: 'test1',
           password: 'test2'
         }
+      }).then(res => {
+        assert.equal(res.body, 'user login')
       })
-        .then(res => {
-          console.log(res)
-          assert.equal(res.body, 'user login')
-          done()
-        })
-        .catch(err => console.log(err.response.body))
     })
   })
 }
