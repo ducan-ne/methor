@@ -1,8 +1,11 @@
 {
   "name": "methor",
-  "version": "1.2.22",
-  "description": "Method-oriented layer for modern web ( Facebook api style )",
+  "version": "1.2.23",
+  "description": "Method-oriented layer for modern web ( Facebook api inspired )",
   "main": "lib/methor.js",
+  "bin": {
+    "methor": "./bin/methor.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ancm-s/methor.git"
@@ -26,6 +29,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "chalk": "^2.3.2",
+    "commander": "^2.16.0",
     "finalhandler": "^1.1.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
