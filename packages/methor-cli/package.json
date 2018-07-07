@@ -1,0 +1,26 @@
+{
+  "name": "methor-cli",
+  "version": "0.0.1",
+  "bin": {
+    "methor": "./main.js"
+  },
+  "description": "methor app generator",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "ejs": "^2.6.1",
+    "empty-dir": "^1.0.0",
+    "fs-extra": "^6.0.1",
+    "glob": "^7.1.2",
+    "inquirer": "^6.0.0",
+    "minimatch": "^3.0.4",
+    "mkdirp": "^0.5.1",
+    "shelljs": "^0.8.2"
+  }
+}
