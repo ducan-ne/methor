@@ -1,2 +1,1 @@
-- methor.errorHandler => for Methor.handlerResponse
-- docs vuepress
+# 1.2.23

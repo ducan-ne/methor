@@ -43,7 +43,8 @@
     "start": "cross-env NODE_ENV=development nodemon --exec babel-node ./example/index.js",
     "commit": "git-cz",
     "build": "rimraf lib && babel src -d lib",
-    "serve": "node lib/index.js"
+    "serve": "node lib/index.js",
+    "release": "/bin/bash scripts/release.sh"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

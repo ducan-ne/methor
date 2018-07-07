@@ -7,7 +7,7 @@ Each method generated to nested path (Like `auth.login`), providing easily way t
 
 ## How It Works
 
-- First, `Methor` transform object from `{user: {login: [Function]}}` to `{'user.login': Function}`. When user request to API, `Methor` excecuted method. This is inspired by Facebook's `api.facebook.com/method/auth.login` API
+- `Methor` transform object from `{user: {login: [Function]}}` to `{'user.login': Function}`. When user request to API, `Methor` excecuted method. This is inspired by Facebook's `api.facebook.com/method/auth.login` API
 
 - Parameter useful inspired by angularjs
 
