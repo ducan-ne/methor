@@ -89,3 +89,15 @@ Login.validate = [
   }
 ]
 ```
+
+## Alias
+
+```js
+function Login(req) {}
+Login.validate = {
+  username: String
+}
+//or
+function Login(req) {}
+Login.validate = ['name']
+```

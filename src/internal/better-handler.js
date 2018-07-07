@@ -53,8 +53,9 @@ export default function(
       $options: this.$options,
       methods: this.methods,
       method: this.methods[methodName],
-      methodName,
       betterhandler: this.BetterHandler,
+      redirect: res.redirect,
+      methodName,
       next,
       req,
       res

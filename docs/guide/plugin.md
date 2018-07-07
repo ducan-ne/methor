@@ -1,5 +1,36 @@
 # Write your plugin
 
+> Plugins expose the full potential of the Methor engine to third-party developers
+
+Use staged build hooks, developers can introduce their own behaviors into the Methor. There is no strictly defined scope for a plugin, there are typically several types of plugins you can write:
+
+- Add some checker `method`. eg [validator](./method-plugin-validate.md)
+- Add some option response. eg send file
+- Add some global method. eg system.info
+- Add some Methor instance method by attaching them to Methor.prototype
+
+A Methor plugin should expose an `install` method.
+
+## Using a plugin
+
+There are 2 method to install a `Plugin`:
+
+- Use plugins by calling the `instance.use()` method:
+
+```js
+app.use(Methor.validator, options)
+```
+
+- Use plugins by adding the plugin to option `plugins`:
+
+```js
+new Methor({
+  plugins: [Methor.validator]
+})
+```
+
+# Hooks
+
 ## beforeEnter
 
 ```js

@@ -115,7 +115,9 @@ export default function(opts: ValidateOpts) {
       let params, isPayload
 
       try {
-        if (
+        if (method.validate && typeof method.validate.by === 'function') {
+          params = method.validate.by(req, res)
+        } else if (
           method.validate &&
           method.validate.__type &&
           method.validate.__type == 'payload'
