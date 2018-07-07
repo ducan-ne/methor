@@ -152,7 +152,22 @@ Methor.prototype.handlerResponse = function handlerResponse(
       return Main()
     }
     const callback = callbacks[i]
-    callback(req, res, err => $next(callbacks, ++i))
+    callback(
+      {
+        get value(): result {
+          return result
+        },
+        set value(val: any): void {
+          result = val
+        },
+        update(val: any): void {
+          result = val
+        }
+      },
+      err => $next(callbacks, ++i),
+      req,
+      res
+    )
   }
 
   const Main = async (): any => {

@@ -45,7 +45,6 @@ describe('Methor.createMethod', function() {
     const app = await instance
     try {
       let res = await request(app, 'test2')
-      console.log(123, res.body)
       assert.equal(typeof res.body, 'object')
       assert.equal(res.body.message, 'method not found')
     } catch (err) {
