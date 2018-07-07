@@ -88,8 +88,6 @@ const app = new Methor({
   ]
 })
 
-app.get('/', (req, res) => res.end('123'))
-
 // app.$on('server.created', console.log)
 
 // app.$option('pathname', '/restserver2')

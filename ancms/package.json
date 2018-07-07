@@ -1,0 +1,12 @@
+{
+  "name": "ancms",
+  "main": "app.js",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "methor": "1.2.31"
+  }
+}

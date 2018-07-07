@@ -123,21 +123,19 @@ class Generator {
 
   generateOtherFile() {
     mkdir(this.path, 'methods')
+    mkdir(this.path, 'public')
 
-    const resolveTemplate = file => {
+    const resolveTemplate = file => {}
+    const files = (this.files = glob.sync(__dirname + '/template/**/*.*'))
+    for (let file of files) {
+      console.log(file)
       let newPath = path.join(this.path, file.split('/template')[1])
       let fileContent = fs
         .readFileSync(path.resolve(__dirname, file))
         .toString()
-      return {
-        path: newPath,
-        content: ejs.render(fileContent, this)
-      }
+      const content = ejs.render(fileContent, this)
+      fs.outputFileSync(newPath, content)
     }
-    const files = (this.files = glob.sync(__dirname + '/template/**/*.js'))
-    files.map(resolveTemplate).map(function(info, i) {
-      fs.outputFileSync(info.path, info.content)
-    })
   }
 
   generatePackageDotJson() {

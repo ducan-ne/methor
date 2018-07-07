@@ -4,8 +4,8 @@ var app = new Methor({
   port: process.env.PORT || 8080,
   methods: require('./methods'),
   static: __dirname + '/public',
-  <% if(options.plugins.length > 0) { %>plugins: [
-      <%if (~options.plugins.indexOf('validator')) {%>Methor.Validator({
+  plugins: [
+      Methor.Validator({
         handler(err) {
           const res = err.response
           if (err.code == 'METHOD_NONEXIST') {
@@ -34,8 +34,8 @@ var app = new Methor({
             })
           }
         }
-      })<%}%>
-  ],<%}%>
+      })
+  ],
   created(port) {
     console.log('app started at port %d', port)
   }
