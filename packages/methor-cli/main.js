@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const pkg = require('./package.json')
 const path = require('path')
 const fs = require('fs-extra')
 const chalk = require('chalk')
@@ -8,7 +7,6 @@ const inquirer = require('inquirer')
 const emptyDir = require('empty-dir')
 const glob = require('glob')
 const ejs = require('ejs')
-const TEMPLATE_DIR = path.resolve(__dirname, 'template')
 const mkdirp = require('mkdirp')
 const cp = require('child_process')
 const shell = require('shelljs')
