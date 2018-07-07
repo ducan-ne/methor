@@ -35,10 +35,11 @@
     "router": "^1.3.2"
   },
   "scripts": {
-    "changelog": "lerna-changelog",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "docs:deploy": "surge ./methor methor.clgt.io",
+    "changelog": "lerna-changelog",
+    "lerna-publish": "lerna publish",
     "flow": "flow",
     "test": "flow && npm run build && mocha --exit --recursive --require ./test/mocha.opts.js",
     "babel-node": "babel-node --presets=env",

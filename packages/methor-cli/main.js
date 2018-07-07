@@ -142,7 +142,7 @@ class Generator {
 
   generatePackageDotJson() {
     let info = {
-      name: this.appName === '.' ? 'methor-app' : this.appName,
+      name: this.appName === '.' ? 'my-app' : this.appName,
       main: 'app.js',
       version: '0.0.0',
       private: true,
