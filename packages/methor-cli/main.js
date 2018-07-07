@@ -125,13 +125,7 @@ class Generator {
     mkdir(this.path, 'methods')
 
     const resolveTemplate = file => {
-      let newPath = path.resolve(
-        this.path,
-        file
-          .split('/')
-          .slice(1)
-          .join('/')
-      )
+      let newPath = path.join(this.path, file.split('/template')[1])
       let fileContent = fs
         .readFileSync(path.resolve(__dirname, file))
         .toString()
@@ -140,7 +134,7 @@ class Generator {
         content: ejs.render(fileContent, this)
       }
     }
-    const files = (this.files = glob.sync('template/**/*.js'))
+    const files = (this.files = glob.sync(__dirname + '/template/**/*.js'))
     files.map(resolveTemplate).map(function(info, i) {
       fs.outputFileSync(info.path, info.content)
     })
@@ -148,7 +142,7 @@ class Generator {
 
   generatePackageDotJson() {
     let info = {
-      name: this.appName,
+      name: this.appName === '.' ? 'methor-app' : this.appName,
       main: 'app.js',
       version: '0.0.0',
       private: true,
@@ -171,12 +165,10 @@ const questions = [
   {
     type: 'input',
     name: 'name',
-    default:
-      'test-dir' ||
-      process
-        .cwd()
-        .split('/')
-        .pop()
+    default: process
+      .cwd()
+      .split('/')
+      .pop()
   },
   {
     type: 'checkbox',
