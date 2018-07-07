@@ -47,7 +47,7 @@
     "commit": "git-cz",
     "build": "rimraf lib && babel src -d lib",
     "serve": "node lib/index.js",
-    "release": "/bin/bash scripts/release.sh"
+    "release": "scripts/release.sh"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
