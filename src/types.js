@@ -14,7 +14,7 @@ export type MethorOptions = {
   funcs?: { [key: string]: Function },
   methods: any,
   static?: string,
-  func?: { [key: string]: Function },
+  services: { [key: string]: any },
   routes: Array<Route>,
   plugins?: Array<any>,
   created?: Function

@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.2.23",
+  "version": "1.2.24",
   "description": "Method-oriented layer for modern web ( Facebook api inspired )",
   "main": "lib/methor.js",
   "repository": {
@@ -8,14 +8,15 @@
     "url": "git+https://github.com/ancm-s/methor.git"
   },
   "keywords": [
-    "method",
-    "restserver",
-    "restserver",
-    "fb",
-    "methor",
     "nodejs",
-    "npm",
-    "router"
+    "router-style-framework",
+    "router",
+    "ancms",
+    "methor",
+    "facebook-api-style",
+    "method-oriented",
+    "nodejs-framework",
+    "framework-javascript"
   ],
   "author": "anCMS",
   "license": "MIT",

@@ -59,9 +59,6 @@ function Methor(opts: MethorOptions): Methor {
   if (!(isFunction(methods) || isObject(methods)))
     throw new TypeError('option methods must be a function or object ')
 
-  // if (!opts.port) throw new TypeError('option port is required')
-  // if (!isNumber(opts.port)) throw new TypeError('option port must be number')
-
   this.$options = opts
   this.methods = getAllMethod(methods)
 
@@ -80,8 +77,6 @@ function Methor(opts: MethorOptions): Methor {
   this._beforeHanldeResponse = []
   this._installed = []
   this.services = {}
-
-  // Server.call(this)
 
   this.installPlugin()
 
