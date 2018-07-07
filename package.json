@@ -1,6 +1,6 @@
 {
   "name": "methor",
-  "version": "1.2.28",
+  "version": "1.2.29",
   "description": "Method-oriented layer for modern web ( Facebook api inspired )",
   "main": "lib/methor.js",
   "repository": {
