@@ -1,6 +1,6 @@
 {
   "name": "methor-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
     "methor": "./main.js"
   },
@@ -21,6 +21,7 @@
     "inquirer": "^6.0.0",
     "minimatch": "^3.0.4",
     "mkdirp": "^0.5.1",
+    "ms": "^2.1.1",
     "shelljs": "^0.8.2"
   }
 }
