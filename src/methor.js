@@ -16,6 +16,7 @@ import {
   capitalize,
   setPropertyOf,
   isNull,
+  isUndef,
   flatten
 } from './util'
 import * as util from './util'
@@ -76,6 +77,7 @@ function Methor(opts: MethorOptions): Methor {
   this.$mount = Mount
 
   this._beforeEnter = []
+  this._beforeHanldeResponse = []
   this._installed = []
   this.services = {}
 
@@ -140,39 +142,50 @@ Methor.prototype.beforeHandleResponse = function beforeHandleResponse(
   return this
 }
 
-Methor.prototype.handlerResponse = async function handlerResponse(
+Methor.prototype.handlerResponse = function handlerResponse(
   req: HttpRequest,
   res: HttpResponse,
   result: any
-): Promise<void> {
-  if (isPromise(result)) {
-    try {
-      result = await result
-    } catch (err) {
-      if (isFunction(this.$options.catchHandler)) {
-        this.$options.catchHandler(err, req, res)
-      } else {
-        console.error(err)
+): void {
+  const $next = (callbacks: Array<Function>, i: number = 0): void => {
+    if (isUndef(callbacks[i])) {
+      return Main()
+    }
+    const callback = callbacks[i]
+    callback(req, res, err => $next(callbacks, ++i))
+  }
+
+  const Main = async (): any => {
+    if (isPromise(result)) {
+      try {
+        result = await result
+      } catch (err) {
+        if (isFunction(this.$options.catchHandler)) {
+          this.$options.catchHandler(err, req, res)
+        } else {
+          console.error(err)
+        }
       }
     }
-  }
 
-  if (res.finished) {
-    return
-  }
+    if (res.finished) {
+      return
+    }
 
-  if (result == undefined || result == null) {
-    return res.end('')
-  }
+    if (result == undefined || result == null) {
+      return res.end('')
+    }
 
-  if (isString(result) || isNumber(result)) {
-    return res.end(String(result))
-  }
+    if (isString(result) || isNumber(result)) {
+      return res.end(String(result))
+    }
 
-  if (isObject(result) || isArray(result)) {
-    return res.json(result)
+    if (isObject(result) || isArray(result)) {
+      return res.json(result)
+    }
+    return res.end(result.toString())
   }
-  return res.end(result.toString())
+  $next(this._beforeHanldeResponse)
 }
 
 Methor.prototype.warn = function warn(msg: any, plugin: string): void {
