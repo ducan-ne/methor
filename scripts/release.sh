@@ -20,7 +20,6 @@ select VERSION in patch minor major "Specific Version"
 
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         # pre release task
-        npm run lint
         npm run test
 
         # bump version

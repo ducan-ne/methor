@@ -38,7 +38,7 @@
     "docs:build": "vuepress build docs",
     "docs:deploy": "surge ./methor methor.clgt.io",
     "flow": "flow",
-    "test": "flow && npm run build && mocha  --recursive --require ./test/mocha.opts.js",
+    "test": "flow && npm run build && mocha --exit --recursive --require ./test/mocha.opts.js",
     "babel-node": "babel-node --presets=env",
     "start": "cross-env NODE_ENV=development nodemon --exec babel-node ./example/index.js",
     "commit": "git-cz",
