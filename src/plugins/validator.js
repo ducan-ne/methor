@@ -117,6 +117,7 @@ export default function(opts: ValidateOpts) {
       try {
         if (method.validate && typeof method.validate.by === 'function') {
           params = method.validate.by(req, res)
+          if (!params) return next()
         } else if (
           method.validate &&
           method.validate.__type &&

@@ -17,6 +17,7 @@ function testMethod() {
         }
       })
         .then(res => {
+          console.log(res)
           assert.equal(res.body, 'user login')
           done()
         })
