@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Your git status is not clean. Aborting.";
+  exit 1;
+fi
+
+set -e
+set -x
+
 echo "Select a option to release (input a serial number)："
 echo
 
