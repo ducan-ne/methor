@@ -114,7 +114,7 @@ Methor.prototype.BetterHandler = require('./internal/better-handler').default
 
 Methor.prototype.beforeEnter = function beforeEnter(
   ...callbacks: Array<Function>
-) {
+): Methor {
   if (callbacks.length == 0) {
     throw new TypeError('argument handler is required')
   }
@@ -123,6 +123,20 @@ Methor.prototype.beforeEnter = function beforeEnter(
       throw new TypeError('argument handler must be function')
   }
   this._beforeEnter = [...this._beforeEnter, ...callbacks]
+  return this
+}
+
+Methor.prototype.beforeHandleResponse = function beforeHandleResponse(
+  ...callbacks: Array<Function>
+): Methor {
+  if (callbacks.length == 0) {
+    throw new TypeError('argument handler is required')
+  }
+  for (let callback of callbacks) {
+    if (!isFunction(callback))
+      throw new TypeError('argument handler must be function')
+  }
+  this._beforeHanldeResponse = [...this._beforeHanldeResponse, ...callbacks]
   return this
 }
 
@@ -264,6 +278,16 @@ Methor.prototype.installPlugin = function(): void {
       plugin.apply(this, [])
     }
   }
+}
+
+Methor.prototype.use = function(plugin: any, opts: any): void {
+  const plugins = this.$options.plugins
+  if (!plugins) {
+    this.$options.plugins = []
+  }
+  this.$options.plugins.push(isFunction(plugin) ? plugin(opts) : plugin)
+  this.installPlugin()
+  return this
 }
 
 Methor.prototype.$option = function setOption(k: string, value: any): Methor {

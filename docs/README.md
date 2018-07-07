@@ -37,4 +37,5 @@ methor hello-world
 
 ::: tip Support
 Support all version Node.
+methor-cli: 6^
 :::
