@@ -14,7 +14,7 @@ const http = require('http')
 const app = new Methor({
   // pathname: '/ancms',
   static: path.resolve(__dirname, '.', 'public'),
-  port: 3002,
+  // port: 3002,
   methods: {
     user
   },
