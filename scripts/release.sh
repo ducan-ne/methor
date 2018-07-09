@@ -32,7 +32,7 @@ select VERSION in patch minor major "Specific Version"
         echo Releasing ${NEW_VERSION} ...
 
         # npm release
-        yarn publish
+        npm publish
         echo "✅ Released to npm."
 
         # github release
