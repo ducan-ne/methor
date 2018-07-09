@@ -22,7 +22,8 @@ type Validate = {
 }
 
 type ValidateOpts = {
-  handler(err: ValidateError): void
+  handler(err: ValidateError): void,
+  by?: Function
 }
 
 function ValidateError(
@@ -115,8 +116,8 @@ export default function(opts: ValidateOpts) {
       let params, isPayload
 
       try {
-        if (method.validate && typeof method.validate.by === 'function') {
-          params = method.validate.by(req, res)
+        if (opts.by && typeof opts.by === 'function') {
+          params = opts.by(req, res)
           if (!params) return next()
         } else if (
           method.validate &&
