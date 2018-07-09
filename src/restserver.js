@@ -18,7 +18,6 @@ export default function Restserver(
 ): void {
   const that: any = this
   const methods = that.methods
-  const method = (req.method = req.query.method || req.body.method)
 
   const $next = (callbacks: Array<Function>, i: number = 0) => {
     if (isUndef(callbacks[i])) {

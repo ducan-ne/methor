@@ -51,13 +51,7 @@ export default class Layer {
       // not a standard request handler
       return next()
     }
-
-    try {
-      fn(req, res, next)
-    } catch (err) {
-      // catching "throw new Error"
-      next(err)
-    }
+    fn(req, res, next)
   }
 
   match(path: any) {
