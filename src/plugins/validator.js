@@ -23,7 +23,9 @@ type Validate = {
 
 type ValidateOpts = {
   handler(err: ValidateError): void,
-  by?: Function
+  by?: Function,
+  payload?: Function,
+  setPayload?: Function
 }
 
 function ValidateError(
@@ -123,7 +125,10 @@ export default function(opts: ValidateOpts) {
           method.validate.__type &&
           method.validate.__type == 'payload'
         ) {
-          params = JSON.parse(req.query.payload)
+          params =
+            typeof opts.payload === 'function'
+              ? opts.payload(req, res)
+              : JSON.parse(req.query.payload)
           isPayload = true
         } else {
           params = req.query
@@ -172,7 +177,7 @@ export default function(opts: ValidateOpts) {
         }
       }
 
-      for (let validate: Validate of stack) {
+      for (let validate of stack) {
         const {
           regex,
           option,
@@ -258,7 +263,16 @@ export default function(opts: ValidateOpts) {
       }
 
       if (isPayload) {
-        req.query.payload = params
+        const isPayloadBody = Object.keys(req.body).length > 0
+        if (typeof opts.setPayload == 'function') {
+          opts.setPayload(req, params)
+        } else {
+          if (isPayloadBody) {
+            req.body.payload = params
+          } else {
+            req.query.payload = params
+          }
+        }
       }
 
       next()
