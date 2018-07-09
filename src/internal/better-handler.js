@@ -1,6 +1,12 @@
 // @flow
 
-import { getParamFunc, getProperty, isArray, isFunction } from '../util'
+import {
+  getParamFunc,
+  getProperty,
+  isArray,
+  isFunction,
+  isString
+} from '../util'
 import _get from 'lodash.get'
 import type { HttpResponse, HttpRequest } from '../types'
 
@@ -15,10 +21,27 @@ export default function(
   next: Function,
   handlerIfNoRes: boolean = true
 ): void {
+  const { $options: opts, isFunction } = this
+
   if (handler.name === 'MethorObject') {
   }
 
-  const methodName = req.query.method
+  let methodName
+
+  if (isString(opts.resolveMethod)) {
+    if (opts.resolveMethod === 'req.body') {
+      methodName = req.body.method
+    }
+    if (opts.resolveMethod === 'req.headers') {
+      methodName = req.body.headers
+    }
+  } else if (isFunction(opts.resolveMethod)) {
+    methodName = opts.resolveMethod(req, res)
+  }
+
+  if (!methodName) {
+    methodName = req.query.method
+  }
 
   let calledNext = false
 
