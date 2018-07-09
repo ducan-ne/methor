@@ -4,7 +4,7 @@ var path = require('path')
 var app = new Methor({
   port: process.env.PORT || 8080,
   methods: require('./methods'),
-  static: path.resolve(__dirname, '/public'),
+  static: path.resolve(__dirname, 'public'),
   <% if(options.plugins.length > 0) { %>plugins: [
       <%if (~options.plugins.indexOf('validator')) {%>Methor.Validator({
         handler(err) {

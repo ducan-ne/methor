@@ -80,23 +80,27 @@ function Methor(opts: MethorOptions): Methor {
 
   this.installPlugin()
 
-  function methor(req: HttpRequest, res: HttpResponse, next: ?Function) {
-    methor.handler(req, res, next)
+  function MethorInstance(
+    req: HttpRequest,
+    res: HttpResponse,
+    next: ?Function
+  ) {
+    MethorInstance.handler(req, res, next)
   }
-  setPropertyOf(methor, this)
+  setPropertyOf(MethorInstance, this)
 
   const event = new events.EventEmitter()
-  methor.$on = event.on
-  methor.$off = event.removeListener
-  methor.$emit = event.emit
-  methor.$offall = event.removeAllListeners
+  MethorInstance.$on = event.on
+  MethorInstance.$off = event.removeListener
+  MethorInstance.$emit = event.emit
+  MethorInstance.$offall = event.removeAllListeners
 
-  methor.stack = []
-  methor.params = {}
+  MethorInstance.stack = []
+  MethorInstance.params = {}
 
-  methor.init()
+  MethorInstance.init()
 
-  return methor
+  return MethorInstance
 }
 
 Methor.prototype = function() {}
