@@ -16,6 +16,8 @@ export default function Listen(
       this(req, res, finalhandler(req, res))
     })
 
+  this.__server = server
+
   server.listen(port, () => {
     const port = server.address().port
     this.port = port
@@ -23,6 +25,7 @@ export default function Listen(
     if (isFunction(opts.created)) {
       opts.created.call(this, port, server)
       this.$emit('server.created', port, server)
+      this.$emit('server-created', port, server)
       isFunction(fn) && fn(port)
     }
   })
