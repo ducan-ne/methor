@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e # exit when code != 0
+# set -e # exit when code != 0
 set -x
 
 echo "Select a option to release (input a serial number)："
