@@ -24,6 +24,7 @@ select VERSION in patch minor major "Specific Version"
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         # pre release task
         npm run test
+        npm run changelog
 
         # bump version
         npm version $VERSION
