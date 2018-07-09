@@ -74,8 +74,8 @@ export default function Init() {
   }
 
   if (isNumber(opts.port) || isNull(opts.port)) {
-    defer(() => {
-      this.listen(opts.port)
-    })
+    // defer(() => {
+    this.listen(opts.port)
+    // })
   }
 }
