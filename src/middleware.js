@@ -8,9 +8,8 @@ export default function Middleware(
   res: HttpResponse,
   next: Function
 ): void {
-  const query: any = (req.query = parse(req.url, true).query)
-
-  res.json = function json(obj: any, pretty: ?boolean) {
+  const query = (req.query = parse(req.url, true).query)
+  res.json = function json(obj: any, pretty?: boolean) {
     res.setHeader('Content-Type', 'application/json;charset=utf8')
     res.end(pretty == true ? JSON.stringify(obj, null, 4) : JSON.stringify(obj))
   }
@@ -20,8 +19,6 @@ export default function Middleware(
     res.setHeader('Location', uri)
     res.end()
   }
-
-  req.class = query.method ? query.method.split('.')[0] : false
 
   next()
 }

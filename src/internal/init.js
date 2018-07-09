@@ -26,7 +26,9 @@ export default function Init() {
     this.services = opts.services
   }
 
-  this.middleware(Middleware)
+  this.middleware((req, res, next) => {
+    Middleware.call(this, req, res, next)
+  }) // keep "this"
 
   if (isArray(opts.middlewares)) {
     for (let mid of opts.middlewares) {
@@ -61,6 +63,35 @@ export default function Init() {
       )
     }
   }
+
+  this.middleware((req, res, next) => {
+    const query = req.query
+    const body = req.body
+    const { isFunction, isString, $options: opts } = this
+
+    let methodName
+
+    if (isString(opts.resolveMethod)) {
+      if (opts.resolveMethod === 'req.body') {
+        methodName = body.method
+      }
+      if (opts.resolveMethod === 'req.headers') {
+        methodName = req.headers['method']
+      }
+    } else if (isFunction(opts.resolveMethod)) {
+      methodName = opts.resolveMethod(req, res)
+    }
+
+    if (!methodName) {
+      methodName = query.method
+    }
+
+    req.methodName = methodName
+    req._method = this.methods[methodName]
+
+    req.class = query.method ? query.method.split('.')[0] : false
+    next()
+  })
 
   if (isObject(opts.routes) || isArray(opts.routes)) {
     let routes = opts.routes

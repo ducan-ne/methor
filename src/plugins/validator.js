@@ -69,9 +69,8 @@ export default function(opts: ValidateOpts) {
       res: HttpResponse,
       next: Function
     ) {
-      const methodName = req.query.method
-
-      const method = this.methods[methodName]
+      const method = req._method
+      const methodName = req.methodName
 
       const handlerError = (
         code: string,
@@ -118,7 +117,7 @@ export default function(opts: ValidateOpts) {
       try {
         if (opts.by && typeof opts.by === 'function') {
           params = opts.by(req, res)
-          if (!params) return next()
+          if (!params) throw new Error()
         } else if (
           method.validate &&
           method.validate.__type &&

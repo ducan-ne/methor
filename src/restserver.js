@@ -33,8 +33,9 @@ export default function Restserver(
       (err: Error | string | void) => {
         // next
         if (isString(err)) {
-          // next(methodName)
-          req.method = err
+          req.methodName = err
+          // $flow-disable-line
+          req._method = this.methods[err]
           return Restserver(...arguments)
         } else {
           $next(callbacks, ++i)
@@ -51,11 +52,9 @@ export default function Restserver(
   $next(beforeEnter)
 
   function Main(): void {
-    const methodName = req.query.method
-
-    let method = methods[methodName]
+    let method = req._method
     if (!method) {
-      that.warn(`method ${methodName} not exist`)
+      that.warn(`method ${req.methodName} not exist`)
       that.$emit('method.not.exist', req, res)
       return next()
     }

@@ -26,23 +26,6 @@ export default function(
   if (handler.name === 'MethorObject') {
   }
 
-  let methodName
-
-  if (isString(opts.resolveMethod)) {
-    if (opts.resolveMethod === 'req.body') {
-      methodName = req.body.method
-    }
-    if (opts.resolveMethod === 'req.headers') {
-      methodName = req.body.headers
-    }
-  } else if (isFunction(opts.resolveMethod)) {
-    methodName = opts.resolveMethod(req, res)
-  }
-
-  if (!methodName) {
-    methodName = req.query.method
-  }
-
   let calledNext = false
 
   const regexs = [
@@ -75,10 +58,10 @@ export default function(
       setHeader: res.setHeader,
       $options: this.$options,
       methods: this.methods,
-      method: this.methods[methodName],
+      method: req._method,
+      methodName: req.methodName,
       betterhandler: this.BetterHandler,
       redirect: res.redirect,
-      methodName,
       next,
       req,
       res
@@ -110,7 +93,9 @@ export default function(
     params = handler.slice(0, -1)
     handler = handler[handler.length - 1]
     if (!isFunction(handler))
-      throw new TypeError('argument handler is required (' + methodName + ')')
+      throw new TypeError(
+        'argument handler is required (' + req.methodName + ')'
+      )
   }
   const inject = []
   for (const name of params) {
