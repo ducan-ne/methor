@@ -1,6 +1,6 @@
 'use strict'
 
-const Methor = require('../../lib/methor')
+const Methor = require('../../src/methor')
 
 const Register = Methor.createMethod(function(req) {
   return {

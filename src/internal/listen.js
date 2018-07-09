@@ -7,14 +7,14 @@ import { Server } from 'http'
 export default function Listen(
   port: number,
   fn: Function,
-  _server: Server
+  server: Server
 ): void {
   const { $options: opts, isFunction } = this
-  const server =
-    _server ||
-    http.createServer((req, res) => {
+  if (!server) {
+    server = http.createServer((req, res) => {
       this(req, res, finalhandler(req, res))
     })
+  }
 
   this.__server = server
 
@@ -25,7 +25,7 @@ export default function Listen(
     if (isFunction(opts.created)) {
       opts.created.call(this, port, server)
       this.$emit('server.created', port, server)
-      this.$emit('server-created', port, server)
+      // this.$emit('server-created', port, server)
       isFunction(fn) && fn(port)
     }
   })
