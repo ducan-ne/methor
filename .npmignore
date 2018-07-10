@@ -1,4 +1,5 @@
 src
+scripts
 .vscode
 test
 TODOs.md
@@ -7,3 +8,7 @@ docs
 methor
 example
 packages
+*.log
+LICENSE
+lerna.json
+README.md
