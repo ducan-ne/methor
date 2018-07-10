@@ -93,6 +93,18 @@ export default function Init() {
     next()
   })
 
+  this.middleware((req, res, next) => {
+    const rPath =
+      'string' == typeof this.$options.pathname
+        ? this.$options.pathname
+        : '/restserver'
+    if (req._parsedUrl.pathname === rPath) {
+      this.restserver(req, res, next)
+    } else {
+      next()
+    }
+  })
+
   if (isObject(opts.routes) || isArray(opts.routes)) {
     let routes = opts.routes
     for (let index in routes) {

@@ -8,7 +8,8 @@ export default function Middleware(
   res: HttpResponse,
   next: Function
 ): void {
-  const query = (req.query = parse(req.url, true).query)
+  req._parsedUrl = parse(req.url, true)
+  const query = (req.query = req._parsedUrl.query)
   res.json = function json(obj: any, pretty?: boolean): void {
     res.setHeader('Content-Type', 'application/json;charset=utf8')
     res.end(pretty == true ? JSON.stringify(obj, null, 4) : JSON.stringify(obj))

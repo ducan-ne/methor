@@ -120,29 +120,7 @@ export default function Handler(req, res, callback) {
 
   // middleware and routes
 
-  // restserver layer
-  const rPath =
-    'string' == typeof this.$options.pathname
-      ? this.$options.pathname
-      : '/restserver'
-
-  const rRoute = new Route(rPath)
-
-  const rLayer = new Layer(
-    rPath,
-    {
-      sensitive: opts.caseSensitive,
-      strict: opts.strict,
-      end: true
-    },
-    rRoute.dispatch.bind(rRoute)
-  )
-
-  rLayer.route = rRoute
-
-  const stack = [...this.stack, rLayer]
-
-  rRoute.all(this.restserver.bind(this))
+  const stack = this.stack
 
   // manage inter-router variables
   const parentUrl = req.baseUrl || ''
