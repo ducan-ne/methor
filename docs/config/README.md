@@ -47,7 +47,9 @@ Public path to serve. This will proxy to `serve-static`.
 Alias call function. For example: `{getUserById: [Function anonymous]}` can call like this
 
 ```js
-this.getUserById(user.id)
+function Login() {
+  this.getUserById(user.id)
+}
 ```
 
 While using this style, your method must not be arrow function:
@@ -307,6 +309,21 @@ new Methor({
 })
 ```
 
+### resolveMethod
+
+- Type: `Function`
+- Default: `undefined`
+- Argument: `ServerRequest`, `ServerResponse`
+- Usage:
+
+```js
+new Methor({
+  resolveMethod(req) {
+    // return req.body.method
+  }
+})
+```
+
 Assign a handler for uncaught error during `Methor.handleResponse` work.
 
 ## EventEmitter
@@ -325,3 +342,34 @@ Will call if request have a method that not defined
 - Argument: `port`, `server`
 
 Are function which are called when `methor` listened
+
+## Context
+
+Some `method` we use, declare `ServerRequest`, `ServerRequest` seem lose time, we need a small part of it like `body`, `query`, `headers`. So `Methor` support to get that through context `this`, like:
+
+```js
+function Login() {
+  this.body.id
+  this.query.username
+  this.headers['user-agent']
+  //
+}
+```
+
+All of property `Methor` are supporting:
+
+- `body`: req.body,
+- `query`: req.query,
+- `headers`: res.headers,
+- `userAgent` req.headers['user-agent'],
+- `end`: res.end,
+- `setHeader`: res.setHeader,
+- `$options`: instance.$options,
+- `methods`: instance.methods,
+- `method`: req.\_method,
+- `methodName`: req.methodName,
+- `betterhandler`: this.BetterHandler,
+- `redirect`: res.redirect,
+- `next`: next,
+- `req`: req,
+- `res`: res
