@@ -14,7 +14,7 @@ function generateRegEx(name: string): RegExp {
   return new RegExp('(\\$?' + name + '\\.?(.+)?$)')
 }
 
-export default function(
+export default async function(
   handler: Function,
   req: HttpRequest,
   res: HttpResponse,
@@ -114,8 +114,19 @@ export default function(
     }
     inject.push(val || undefined)
   }
-  let result
-  result = handler.apply(ctxProxy, inject)
+  let result = handler.apply(ctxProxy, inject)
+
+  if (isPromise(result)) {
+    try {
+      result = await result
+    } catch (err) {
+      if (isFunction(opts.catchHandler)) {
+        opts.catchHandler(err, req, res)
+      } else {
+        console.error(err)
+      }
+    }
+  }
 
   if (!handlerIfNoRes && !result) return
   calledNext === false && this.handlerResponse(req, res, result)

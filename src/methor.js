@@ -170,17 +170,6 @@ Methor.prototype.handlerResponse = function handlerResponse(
   }
 
   const Main = async (): any => {
-    if (isPromise(result)) {
-      // try {
-      result = await result
-      // } catch (err) {
-      //   if (isFunction(this.$options.catchHandler)) {
-      //     this.$options.catchHandler(err, req, res)
-      //   } else {
-      //     console.error(err)
-      //   }
-      // }
-    }
     if (res.finished) {
       return
     }

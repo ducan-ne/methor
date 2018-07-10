@@ -34,19 +34,19 @@ export function isFunction(v: any): boolean %checks {
   )
 }
 
-export function isNumber(v: any): boolean {
+export function isNumber(v: any): boolean %checks {
   return _typeof(v) == 'Number'
 }
 
-export function isArray(v: any): boolean {
+export function isArray(v: any): boolean %checks {
   return _typeof(v) == 'Array'
 }
 
-export function isString(v: any): boolean {
+export function isString(v: any): boolean %checks {
   return _typeof(v) == 'String'
 }
 
-export function isBoolean(v: any): boolean {
+export function isBoolean(v: any): boolean %checks {
   return _typeof(v) == 'Boolean'
 }
 
@@ -71,7 +71,7 @@ export function isBoolean(v: any): boolean {
 //   return fn.bind(proxy)
 // }
 
-export function isPromise(v: any): boolean {
+export function isPromise(v: any): boolean %checks {
   return v && isFunction(v.then)
 }
 
