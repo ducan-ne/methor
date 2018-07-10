@@ -1,6 +1,6 @@
 'use strict'
 
-const Methor = require('../src/methor')
+const Methor = require('../lib/methor')
 const path = require('path')
 
 const user = {
