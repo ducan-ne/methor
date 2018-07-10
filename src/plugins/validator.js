@@ -260,18 +260,7 @@ export default function(opts: ValidateOpts) {
       }
 
       if (isPayload) {
-        const isPayloadBody = Object.keys(req.body).length > 0
-        if (typeof opts.setPayload == 'function') {
-          opts.setPayload(req, params)
-          req.payload = params
-        } else {
-          if (isPayloadBody) {
-            req.payload = params
-            req.body.payload = params
-          } else {
-            req.query.payload = params
-          }
-        }
+        req.payload = params
       }
       next()
     })
