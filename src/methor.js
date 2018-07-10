@@ -146,6 +146,9 @@ Methor.prototype.handlerResponse = function handlerResponse(
   res: HttpResponse,
   result: any
 ): void {
+  if (res.finished) {
+    return
+  }
   const $next = (callbacks: Array<Function>, i: number = 0): void => {
     if (isUndef(callbacks[i])) {
       return Main()
