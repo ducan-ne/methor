@@ -20,7 +20,6 @@ import {
   flatten
 } from './util'
 import * as util from './util'
-import Router from 'router'
 import methods from 'methods'
 
 import Route from './internal/route'

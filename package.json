@@ -31,7 +31,8 @@
     "finalhandler": "^1.1.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
-    "methods": "^1.1.2"
+    "methods": "^1.1.2",
+    "path-to-regexp": "^2.2.1"
   },
   "scripts": {
     "docs:dev": "vuepress dev docs",
