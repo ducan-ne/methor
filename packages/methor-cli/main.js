@@ -128,7 +128,6 @@ class Generator {
     const resolveTemplate = file => {}
     const files = (this.files = glob.sync(__dirname + '/template/**/*.*'))
     for (let file of files) {
-      console.log(file)
       let newPath = path.join(this.path, file.split('/template')[1])
       let fileContent = fs
         .readFileSync(path.resolve(__dirname, file))
