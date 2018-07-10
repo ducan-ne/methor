@@ -69,15 +69,15 @@ function trySendOptionsResponse(res, methods, next) {
 }
 
 function sendOptionsResponse(res, methods) {
-  var options = Object.create(null)
+  const options = Object.create(null)
 
   // build unique method map
-  for (var i = 0; i < methods.length; i++) {
+  for (let i = 0; i < methods.length; i++) {
     options[methods[i]] = true
   }
 
   // construct the allow list
-  var allow = Object.keys(options)
+  const allow = Object.keys(options)
     .sort()
     .join(', ')
 

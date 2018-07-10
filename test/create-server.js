@@ -70,11 +70,6 @@ export default new Methor({
             message: `param ${err.validate.name} is required`
           })
         }
-        if (err.code == 'INVALID_PARAM') {
-          res.json({
-            message: `param ${err.validate.name} is invalid`
-          })
-        }
       }
     })
   ]

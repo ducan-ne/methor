@@ -181,7 +181,6 @@ Methor.prototype.handlerResponse = function handlerResponse(
         }
       }
     }
-
     if (res.finished) {
       return
     }

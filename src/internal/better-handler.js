@@ -114,7 +114,9 @@ export default function(
     }
     inject.push(val || undefined)
   }
-  const result = handler.bind(ctxProxy)(...inject)
+  let result
+  result = handler.apply(ctxProxy, inject)
+
   if (!handlerIfNoRes && !result) return
   calledNext === false && this.handlerResponse(req, res, result)
 }

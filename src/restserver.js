@@ -31,6 +31,7 @@ export default function Restserver(
       res,
       (err: Error | string | void) => {
         // next
+        if (res.finished) return
         if (isString(err)) {
           req.methodName = err
           // $flow-disable-line

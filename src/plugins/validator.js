@@ -78,7 +78,7 @@ export default function(opts: ValidateOpts) {
         code: string,
         validate: ?Validate,
         subcode?: string
-      ) => {
+      ): void => {
         setTimeout(() => {
           if (!res.finished) {
             warn(
@@ -274,7 +274,6 @@ export default function(opts: ValidateOpts) {
           }
         }
       }
-
       next()
     })
   }
