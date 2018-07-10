@@ -263,8 +263,10 @@ export default function(opts: ValidateOpts) {
         const isPayloadBody = Object.keys(req.body).length > 0
         if (typeof opts.setPayload == 'function') {
           opts.setPayload(req, params)
+          req.payload = params
         } else {
           if (isPayloadBody) {
+            req.payload = params
             req.body.payload = params
           } else {
             req.query.payload = params

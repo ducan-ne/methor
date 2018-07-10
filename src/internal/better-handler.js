@@ -50,6 +50,7 @@ export default async function(
 
   const ctx = Object.assign(
     {
+      payload: req.payload,
       body: req.body,
       query: req.query,
       headers: req.headers,
