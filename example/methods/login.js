@@ -3,7 +3,7 @@
 module.exports = [
   'req[headers][user-agent]',
   'res',
-  function(req, res, headers) {
+  function(userAgent, res) {
     return new Promise(resolve => {
       // --- FAKE LOGIN ---
       setTimeout(() => {

@@ -118,17 +118,14 @@ export default function(opts: ValidateOpts) {
 
       try {
         if (opts.by && typeof opts.by === 'function') {
-          params = opts.by(req, res)
+          params = opts.by(req, method)
           if (!params) throw new Error()
         } else if (
           method.validate &&
           method.validate.__type &&
           method.validate.__type == 'payload'
         ) {
-          params =
-            typeof opts.payload === 'function'
-              ? opts.payload(req, res)
-              : JSON.parse(req.query.payload)
+          params = JSON.parse(req.query.payload)
           isPayload = true
         } else {
           params = req.query
