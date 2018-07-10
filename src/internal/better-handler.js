@@ -20,8 +20,8 @@ export default async function(
   res: HttpResponse,
   next: Function,
   handlerIfNoRes: boolean = true
-): void {
-  const { $options: opts, isFunction } = this
+): Promise<void> {
+  const { $options: opts, isFunction, isPromise } = this
 
   if (handler.name === 'MethorObject') {
   }
