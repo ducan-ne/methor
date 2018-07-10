@@ -117,18 +117,17 @@ export default function(opts: ValidateOpts) {
       let params, isPayload
 
       try {
-        if (opts.by && typeof opts.by === 'function') {
-          params = opts.by(req, method)
-          if (!params) throw new Error()
-        } else if (
+        if (
           method.validate &&
           method.validate.__type &&
           method.validate.__type == 'payload'
         ) {
-          params = JSON.parse(req.query.payload)
+          params = JSON.parse(
+            req.method === 'POST' ? req.body.payload : req.query.payload
+          )
           isPayload = true
         } else {
-          params = req.query
+          params = req.method === 'POST' ? req.body : req.query
           isPayload = false
         }
       } catch (err) {
@@ -261,6 +260,11 @@ export default function(opts: ValidateOpts) {
 
       if (isPayload) {
         req.payload = params
+        if (req.method === 'POST') {
+          req.body.payload = params
+        } else if (req.method === 'GET') {
+          req.query.payload = params
+        }
       }
       next()
     })
